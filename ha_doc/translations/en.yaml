@@ -1,0 +1,58 @@
+configuration:
+  schedule_enabled:
+    name: Create a monthly report
+    description: Creates a full PDF once a month. The add-on must be running (enable "Start on boot").
+  schedule_day:
+    name: Day of month
+    description: Day on which the report is created (1-28).
+  schedule_time:
+    name: Time
+    description: Time as HH:MM (your Home Assistant time zone).
+  keep_last:
+    name: Number of PDFs to keep
+    description: "Applies only to automatically created reports: older ones are deleted, the newest are kept. Files you create manually are deleted by you in the web interface."
+  schedule_from_ui:
+    name: "Use the settings from the web interface"
+    description: "The monthly report uses the selection you saved in the layvo Doku page with the button Save selection for monthly report. If nothing is saved or this switch is off, the options below apply."
+  schedule_uebersicht:
+    name: "Section: Overview"
+    description: Included in the monthly report.
+  schedule_bereiche:
+    name: "Section: Areas and devices"
+    description: Included in the monthly report.
+  schedule_integrationen:
+    name: "Section: Integrations"
+    description: Included in the monthly report.
+  schedule_netzwerk:
+    name: "Section: Network"
+    description: Included in the monthly report. Works only with a Fritz!Box or UniFi gateway; otherwise the section stays empty.
+  schedule_automatisierungen:
+    name: "Section: Automations (text)"
+    description: Included in the monthly report.
+  schedule_schema:
+    name: "Section: Automations (diagram)"
+    description: Included in the monthly report.
+  schedule_skripte:
+    name: "Section: Scripts"
+    description: Included in the monthly report.
+  schedule_szenen:
+    name: "Section: Scenes"
+    description: Included in the monthly report.
+  schedule_helfer:
+    name: "Section: Helpers"
+    description: Included in the monthly report.
+  schedule_auffaelligkeiten:
+    name: "Section: Issues"
+    description: Included in the monthly report.
+  schedule_aenderungen:
+    name: "Section: Changes since last snapshot (optional)"
+    description: "Compares with the last saved snapshot and lists new, removed and changed items. Off by default. Automatic reports save a new snapshot each time (JSON in the snapshots folder)."
+  schedule_hide_diagnostic:
+    name: Hide diagnostic entities
+    description: Hides configuration and diagnostic entities in the device list (shorter PDF).
+  schedule_only_problems:
+    name: Only entries with missing entities
+    description: List automations, scripts and scenes only if they reference entities that no longer exist.
+  schedule_areas:
+    name: Only these areas
+    description: Area names (e.g. Office, Kitchen). Leave empty for all areas. "Ohne Bereich" (no area) is also possible.
