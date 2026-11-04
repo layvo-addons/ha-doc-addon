@@ -1,5 +1,8 @@
 # Änderungen
 
+## 0.6.1
+- Fehlerbehebung: «PDF erstellen» und «Excel erstellen» reagierten nicht, weil die Formulare für Logo und Deckblatt im Hauptformular lagen. Beide stehen jetzt unter «Darstellung» unterhalb der Buttons.
+
 ## 0.6.0
 - Neu, optional und standardmässig aus: **Deckblatt-Angaben** (Ersteller/Firma, Kunde, Version/Stand, Bearbeiter) unter «Deckblatt: Ersteller und Kunde». Erscheinen auf dem Deckblatt der PDFs, auch im Monatsbericht; gespeichert in `share/ha_doc/cover.json`.
 

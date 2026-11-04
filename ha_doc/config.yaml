@@ -1,5 +1,5 @@
 name: "layvo Doku"
-version: "0.6.0"
+version: "0.6.1"
 slug: ha_doc
 description: "Dokumentiert Home Assistant automatisch als PDF"
 url: "https://github.com/layvo-addons/ha-doc-addon"
