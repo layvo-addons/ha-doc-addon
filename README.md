@@ -25,7 +25,7 @@ Alles läuft lokal in deinem Home Assistant, es werden keine Daten nach aussen g
 - **Automatisierungen als Text und als Schema** (Auslöser → Bedingungen → Aktionen), gleichartige Auslöser zusammengefasst.
 - **Blueprints:** Name, Beschreibung und nur die vom Standard abweichenden Eingaben.
 - **Auffälligkeiten:** nicht verfügbare Entitäten und Verweise auf Entitäten, die es nicht mehr gibt (auch in Blueprint-Eingaben).
-- **Monatlicher Bericht** optional, mit Aufbewahrung der letzten N Berichte. Manuell erstellte Dateien lassen sich einzeln löschen.
+- **Monatlicher Bericht** optional, mit Aufbewahrung der letzten N Berichte. Manuell erstellte Dateien lassen sich einzeln oder mehrere auf einmal löschen.
 
 | Geräte | Automatisierung als Schema | Blueprint |
 |---|---|---|

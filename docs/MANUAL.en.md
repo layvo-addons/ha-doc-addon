@@ -72,7 +72,7 @@ The interface follows Home Assistant's light/dark theme.
 | Bemerkungen erfassen (add notes) | Opens the page for your own notes (chapter 9) |
 | Einstellungen Monatsbericht (monthly report settings) | Opens the page for the automatic monthly report (chapter 5) |
 
-**File list.** All created files are listed at the bottom. Click a name to open the PDF or download the Excel file. **Löschen** (delete, with confirmation) removes single files. The files are stored in the `share` folder under `ha_doc`, so you can also reach them via Samba or the file editor.
+**File list.** All created files are listed at the bottom. Click a name to open the PDF or download the Excel file. **Löschen** (delete, with confirmation) removes a single file. To remove several files, tick the boxes on the left (or click **"Alle auswählen"**, select all) and click **"Ausgewählte löschen"** (delete selected); the confirmation shows how many. The files are stored in the `share` folder under `ha_doc`, so you can also reach them via Samba or the file editor.
 
 While you create a file yourself, the page refreshes automatically. For an automatic report, reload the page yourself.
 
