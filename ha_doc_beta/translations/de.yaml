@@ -1,0 +1,58 @@
+configuration:
+  schedule_enabled:
+    name: Monatlichen Bericht erstellen
+    description: Erstellt automatisch einmal im Monat ein vollständiges PDF. Das Add-on muss dafür laufen («Beim Systemstart starten» einschalten).
+  schedule_day:
+    name: Tag im Monat
+    description: Tag, an dem der Bericht erstellt wird (1–28).
+  schedule_time:
+    name: Uhrzeit
+    description: Uhrzeit im Format HH:MM (Zeitzone deines Home Assistant).
+  keep_last:
+    name: Anzahl aufbewahrter PDFs
+    description: "Gilt nur für automatisch erstellte Berichte: ältere werden gelöscht, die neuesten bleiben. Manuell erstellte Dateien löschst du in der Oberfläche selbst."
+  schedule_from_ui:
+    name: "Einstellungen der Oberfläche verwenden"
+    description: "Der Monatsbericht nutzt die Auswahl, die du in der Oberfläche «layvo Doku» mit «Auswahl für Monatsbericht speichern» gespeichert hast. Ist nichts gespeichert oder dieser Schalter aus, gelten die Schalter und Felder unten."
+  schedule_uebersicht:
+    name: "Abschnitt: Übersicht"
+    description: Im Monatsbericht enthalten.
+  schedule_bereiche:
+    name: "Abschnitt: Bereiche und Geräte"
+    description: Im Monatsbericht enthalten.
+  schedule_integrationen:
+    name: "Abschnitt: Integrationen"
+    description: Im Monatsbericht enthalten.
+  schedule_netzwerk:
+    name: "Abschnitt: Netzwerk"
+    description: Im Monatsbericht enthalten. Funktioniert nur mit Fritz!Box oder UniFi-Gateway, sonst bleibt der Abschnitt leer.
+  schedule_automatisierungen:
+    name: "Abschnitt: Automatisierungen (Text)"
+    description: Im Monatsbericht enthalten.
+  schedule_schema:
+    name: "Abschnitt: Automatisierungen (Schema)"
+    description: Im Monatsbericht enthalten.
+  schedule_skripte:
+    name: "Abschnitt: Skripte"
+    description: Im Monatsbericht enthalten.
+  schedule_szenen:
+    name: "Abschnitt: Szenen"
+    description: Im Monatsbericht enthalten.
+  schedule_helfer:
+    name: "Abschnitt: Helfer"
+    description: Im Monatsbericht enthalten.
+  schedule_auffaelligkeiten:
+    name: "Abschnitt: Auffälligkeiten"
+    description: Im Monatsbericht enthalten.
+  schedule_aenderungen:
+    name: "Abschnitt: Änderungen seit letztem Stand (optional)"
+    description: "Vergleicht mit dem letzten gespeicherten Stand und listet neue, entfernte und geänderte Einträge. Standardmässig aus. Automatische Berichte speichern jeweils einen neuen Stand (JSON im Ordner snapshots)."
+  schedule_hide_diagnostic:
+    name: Diagnose-Entitäten ausblenden
+    description: Blendet Konfigurations- und Diagnose-Entitäten in der Geräteliste aus (kürzeres PDF).
+  schedule_only_problems:
+    name: Nur Einträge mit fehlenden Entitäten
+    description: Automatisierungen, Skripte und Szenen nur aufführen, wenn sie auf nicht mehr vorhandene Entitäten verweisen.
+  schedule_areas:
+    name: Nur diese Bereiche
+    description: Namen der Bereiche (z. B. Büro, Küche). Leer lassen für alle Bereiche. «Ohne Bereich» ist ebenfalls möglich.
