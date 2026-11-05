@@ -44,7 +44,7 @@ def labels_for(data):
     for e in data["entities"]:
         lab[f"entity:{e['entity_id']}"] = "Entität: " + e["entity_id"]
     for e in data["entries"]:
-        lab[f"integration:{ent_key(e)}"] = "Integration: " + (e.get("title") or e.get("domain") or "?")
+        lab[f"integration:{ent_key(e)}"] = "Integration: " + ha_doc.entry_title(data, e)
     for x in ha_doc.collect_network(data):
         lab[f"net:{x['mac'] or x['ip']}"] = f"Netzwerk: {x['name']} ({x['ip']})"
     for kind, coll in (("automation", data["automations"]), ("script", data["scripts"]), ("scene", data["scenes"])):
@@ -164,8 +164,8 @@ def page(data, notes, diag=False, saved=False):
         return f'<h2>{_E(title)}</h2><details class="grp" data-s="{_E(title.lower())}"><summary><b>{_E(title)} ({len(rows)})</b></summary><div class="body">{body}</div></details>'
 
     out.append(flat_section("Integrationen", "integration", [
-        (ent_key(e), e.get("title") or e.get("domain") or "?", e.get("domain") or "", f"{e.get('title')} {e.get('domain')}")
-        for e in sorted(data["entries"], key=lambda x: (x.get("title") or x.get("domain") or "").lower())]))
+        (ent_key(e), ha_doc.entry_title(data, e), name, f"{ha_doc.entry_title(data, e)} {name} {dom}")
+        for name, dom, es in ha_doc.grouped_entries(data) for e in es]))
     out.append(flat_section("Netzwerk-Clients (nur UniFi / Fritz!Box)", "net", [
         (x["mac"] or x["ip"], x["name"], f"{x['ip']}  {x['mac']}", f"{x['name']} {x['ip']} {x['mac']}")
         for x in sorted(ha_doc.collect_network(data), key=lambda x: x["name"].lower())]))

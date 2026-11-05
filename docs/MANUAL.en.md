@@ -14,7 +14,7 @@ Depending on your selection, the PDF contains:
 |---|---|
 | Overview | Key figures (entities, devices, areas, integrations …) and entities by domain |
 | Areas and devices | One box per device in each area with manufacturer, model, IP (if known) and all entities |
-| Integrations | All configured integrations with status and source |
+| Integrations | All configured integrations, grouped by integration, with status and source |
 | Network | IP, MAC, vendor, VLAN and Wi-Fi/LAN of devices on your home network (UniFi or Fritz!Box only, see chapter 7) |
 | Automations (text) | Triggers, conditions and actions in plain language; blueprint automations with their inputs |
 | Automations (diagram) | Trigger → conditions → actions as a diagram |
@@ -49,7 +49,7 @@ Updates appear in the add-on store: **⋮ › Check for updates**, then **Update
 
 The interface follows Home Assistant's light/dark theme.
 
-**Sections.** Tick what should go into the PDF. "Änderungen seit letztem Stand" (changes) is off by default.
+**Sections.** Tick what should go into the PDF. "Änderungen seit letztem Stand" (changes) is off by default. **"Alle auswählen"** (select all) and **"Keine auswählen"** (select none) set or clear all ticks at once; nothing is sent until you click "PDF erstellen".
 
 **Options.**
 
@@ -57,7 +57,7 @@ The interface follows Home Assistant's light/dark theme.
 * *Automations, scripts, scenes: only with missing entities* lists only entries that reference entities that no longer exist. Handy for cleaning up.
 * *Change comparison: save this state as the new reference* (only relevant with the changes section, chapter 8).
 
-**Areas.** Under "Bereiche auswählen" you can limit the documentation to individual areas (including "Ohne Bereich", i.e. no area).
+**Areas.** Under "Bereiche auswählen" you can limit the documentation to individual areas (including "Ohne Bereich", i.e. no area). The "Alle auswählen" and "Keine auswählen" buttons work here too.
 
 **Cover page.** Under **"Deckblatt: Ersteller und Kunde (optional)"** you can enter the company (creator) with address, phone, e-mail and website, the customer with address and object/project, and version/date and editor. With **"Angaben auf dem Deckblatt anzeigen"** (show details on the cover page) they appear on the cover of the PDFs, including the monthly report. It is off by default. The data is stored in `cover.json` in the `ha_doc` folder of the `share` folder. The PDF then contains names and addresses; you are responsible for sharing it and for data protection.
 
@@ -90,6 +90,8 @@ The **"Einstellungen Monatsbericht"** (monthly report settings) button on the ma
 | Optionen (options) | Hide diagnostic entities, only entries with missing entities |
 | Bereiche auswählen (select areas) | Only these areas (default: all) |
 
+The "Alle auswählen" and "Keine auswählen" buttons are available for sections and areas.
+
 **Speichern** (save) applies the settings. The selection on the main page applies only to files you create yourself and is separate from the monthly report. The report uses the logo and cover page details from the main page.
 
 **Important:**
@@ -105,7 +107,7 @@ The **"Einstellungen Monatsbericht"** (monthly report settings) button on the ma
 
 * **Geräte (devices):** One row per area, below it the devices with manufacturer/model, IP and number of entities. The **entities are collapsed**. Use the **plus sign at the left edge** next to a device to expand them and the minus sign to collapse them again. The level buttons **1** and **2** at the top left collapse or expand everything at once. Each entity shows name, entity ID and current state.
 * **Netzwerk (network):** IP, MAC, vendor, VLAN, connection and status with a filter (only with UniFi or Fritz!Box).
-* **Integrationen (integrations):** Integration, domain, status, source.
+* **Integrationen (integrations):** integration, entry, domain, status, source, sorted by integration.
 
 The monthly report creates only the PDF, not an Excel file.
 

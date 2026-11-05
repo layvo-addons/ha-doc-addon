@@ -1,5 +1,12 @@
 # Änderungen
 
+## 0.7.2
+- **Integrationen übersichtlicher:** Im PDF und in Excel nach Integration gruppiert und alphabetisch sortiert, zum Beispiel «ESPHome (10)» mit den einzelnen Einträgen darunter. Angezeigt wird der Name der Integration (zum Beispiel «Zigbee Home Automation» statt `zha`).
+- Status und Quelle auf Deutsch («läuft», «neuer Versuch», «deaktiviert»; «von Hand», «automatisch gefunden»). Einträge, die nicht laufen, sind rot markiert, deaktivierte grau.
+- Fehlerbehebung: Einträge ohne Titel (zum Beispiel HACS) zeigen den Namen der Integration statt eines leeren Felds.
+- Die Übersicht zählt Integrationen und Integrations-Einträge getrennt.
+- Neu: Knöpfe «Alle auswählen» und «Keine auswählen» bei Abschnitten und Bereichen, auf der Hauptseite und bei «Einstellungen Monatsbericht».
+
 ## 0.7.1
 - Die Oberfläche zeigt den tatsächlichen Ablageordner an (Hauptseite und «Bemerkungen erfassen»). In der produktiven Version bleibt das `ha_doc`, in der Beta `ha_doc_beta`.
 - Neu im selben Repository: **layvo Doku (BETA)** zum Testen neuer Versionen, mit eigener Ablage `share/ha_doc_beta`.
