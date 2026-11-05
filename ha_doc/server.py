@@ -225,6 +225,13 @@ def schedule_info():
 # Weboberfläche
 # --------------------------------------------------------------------------
 
+def toggle_bar(name):
+    """Knöpfe «Alle» und «Keine» für eine Gruppe von Kontrollkästchen im selben Formular."""
+    js = "this.form.querySelectorAll('input[name={n}]').forEach(function(c){{c.checked={v};}})"
+    return (f'<div class="tgl"><button type="button" class="mini" onclick="{js.format(n=name, v="true")}">Alle auswählen</button>'
+            f'<button type="button" class="mini" onclick="{js.format(n=name, v="false")}">Keine auswählen</button></div>')
+
+
 def checkbox(name, value, label, checked):
     return f'<label class="opt"><input type="checkbox" name="{name}" value="{html.escape(value)}"{" checked" if checked else ""}> {html.escape(label)}</label>'
 
@@ -281,6 +288,7 @@ h1{{margin-top:0}} h2{{font-size:15px;margin:18px 0 6px;color:var(--muted)}}
 button{{background:var(--accent);color:#fff;border:0;padding:12px 22px;border-radius:8px;font-size:16px;cursor:pointer}}
 button[disabled]{{opacity:.5;cursor:wait}} button.del{{background:transparent;color:var(--link);border:1px solid var(--line);padding:4px 10px;font-size:13px}} a.btn{{display:inline-block;padding:12px 22px;border-radius:8px;font-size:16px;text-decoration:none;margin-left:8px}} a.btn.sec{{border:1px solid var(--link);color:var(--link)}} label.fld{{display:block;margin:6px 0;font-size:13px;color:var(--muted)}} label.fld input,label.fld textarea{{display:block;width:100%;box-sizing:border-box;margin-top:2px;padding:6px 8px;border:1px solid var(--line);border-radius:6px;background:var(--card);color:var(--fg);font:inherit}} button.sec{{background:transparent;color:var(--link);border:1px solid var(--link);margin-left:8px}} table{{border-collapse:collapse;width:100%;margin-top:18px;background:var(--card)}}
 td,th{{border:1px solid var(--line);padding:8px 10px;text-align:left}} .msg{{margin:14px 0;color:var(--muted)}}
+.tgl{{margin:4px 0}} button.mini{{background:transparent;color:var(--link);border:1px solid var(--line);padding:4px 10px;font-size:13px;margin-right:6px}}
 .opts{{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:6px;margin:8px 0}}
 .opt{{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:8px 10px;cursor:pointer;display:block}}
 details{{margin:10px 0}} summary{{cursor:pointer;color:var(--link)}} a{{color:var(--link)}}
@@ -307,7 +315,7 @@ def schedule_page(msg="", ok=True):
         items = "".join(checkbox("areas", aid, name, sel is None or aid in sel) for aid, name in areas)
         items += checkbox("areas", "_none", "Ohne Bereich", sel is None or "_none" in sel)
         area_html = (f'<details><summary>Bereiche auswählen ({len(areas) + 1})</summary><input type="hidden" name="areas_present" value="1">'
-                     f'<div class="opts">{items}</div></details>')
+                     f'{toggle_bar("areas")}<div class="opts">{items}</div></details>')
     flt = (checkbox("hide_diag", "1", "Konfigurations- und Diagnose-Entitäten ausblenden (kürzere Geräteliste)", c["hide_diagnostic"]) +
            checkbox("only_problems", "1", "Automatisierungen, Skripte, Szenen: nur mit fehlenden Entitäten", c["only_problems"]))
     note = f'<p class="msg"><b>{E(msg)}</b></p>' if msg else ""
@@ -323,7 +331,7 @@ def schedule_page(msg="", ok=True):
 <label class="fld">Anzahl aufbewahrter PDFs (1 bis 100)<input type="number" name="keep_last" min="1" max="100" value="{c['keep_last']}" required></label>
 </div>
 <p class="msg">Die Anzahl gilt nur für automatisch erstellte Berichte (<code>ha_monatsbericht_…</code>). Manuell erstellte Dateien löschst du auf der Hauptseite.</p>
-<h2>Abschnitte</h2><div class="opts">{secs}</div>
+<h2>Abschnitte</h2>{toggle_bar("sections")}<div class="opts">{secs}</div>
 <h2>Optionen</h2><div class="opts" style="grid-template-columns:1fr">{flt}</div>
 {area_html}
 <p><button>Speichern</button><a class="btn sec" href="./">Abbrechen</a></p></form>
@@ -351,7 +359,7 @@ def page():
         items = "".join(checkbox("areas", aid, name, sel is None or aid in sel) for aid, name in areas)
         items += checkbox("areas", "_none", "Ohne Bereich", sel is None or "_none" in sel)
         area_html = (f'<details><summary>Bereiche auswählen ({len(areas) + 1})</summary><input type="hidden" name="areas_present" value="1">'
-                     f'<div class="opts">{items}</div></details>')
+                     f'{toggle_bar("areas")}<div class="opts">{items}</div></details>')
     logo_html = cover_block() + logo_block()
     extra = (checkbox("save_snap", "1", "Änderungsvergleich: diesen Stand als neue Referenz speichern (sonst nur Vergleich; automatische Berichte speichern immer)", state["save_snap"]) +
              checkbox("hide_diag", "1", "Konfigurations- und Diagnose-Entitäten ausblenden (kürzere Geräteliste)", state["hide_diag"]) +
@@ -360,7 +368,7 @@ def page():
 <h1>Home Assistant Dokumentation</h1>
 <p>Erstellt ein PDF deiner Installation. Wähle, was enthalten sein soll.</p>
 <form method="post" action="generate" onsubmit="if(!document.querySelector('input[name=sections]:checked')){{alert('Bitte mindestens einen Abschnitt auswählen.');return false;}}">
-<h2>Abschnitte</h2><div class="opts">{boxes}</div>
+<h2>Abschnitte</h2>{toggle_bar("sections")}<div class="opts">{boxes}</div>
 <h2>Optionen</h2><div class="opts" style="grid-template-columns:1fr">{extra}</div>
 {area_html}
 <p><button name="action" value="generate" {btn}>PDF erstellen</button>

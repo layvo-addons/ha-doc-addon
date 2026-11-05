@@ -7,6 +7,8 @@ Die PDFs liegen in der Freigabe `share`, Ordner `ha_doc`.
 
 - **Abschnitte:** Übersicht, Bereiche und Geräte, Integrationen, Automatisierungen (Text und/oder Schema), Skripte, Szenen, Helfer, Auffälligkeiten.
 - **Bereiche auswählen:** nur einzelne Bereiche dokumentieren.
+- **Alle auswählen / Keine auswählen:** Knöpfe bei Abschnitten und Bereichen, auch bei «Einstellungen Monatsbericht».
+- **Integrationen:** nach Integration gruppiert, mit Status und Quelle auf Deutsch.
 - **Konfigurations-/Diagnose-Entitäten ausblenden:** kürzere Geräteliste.
 - **Nur Einträge mit fehlenden Entitäten:** zeigt Automatisierungen, Skripte und Szenen, die auf nicht mehr vorhandene Entitäten verweisen.
 

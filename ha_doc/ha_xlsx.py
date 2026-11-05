@@ -106,11 +106,12 @@ def build_xlsx(data, out_path, options=None):
         wn.auto_filter.ref = f"A1:I{wn.max_row}"
 
     wi = wb.create_sheet("Integrationen")
-    _header(wi, ["Integration", "Domain", "Status", "Quelle", "Bemerkung"], [40, 28, 16, 16, 50])
-    for e in sorted(data["entries"], key=lambda x: x.get("domain", "")):
-        wi.append([e.get("title"), e.get("domain"), e.get("state"), e.get("source"),
-                   NOTE("integration", e.get("entry_id") or f"{e.get('domain')}|{e.get('title')}")])
-    wi.auto_filter.ref = f"A1:E{wi.max_row}"
+    _header(wi, ["Integration", "Eintrag", "Domain", "Status", "Quelle", "Bemerkung"], [32, 40, 22, 20, 26, 50])
+    for name, dom, es in ha_doc.grouped_entries(data):
+        for e in es:
+            wi.append([name, ha_doc.entry_title(data, e), dom, ha_doc.entry_state_de(e), ha_doc.entry_source_de(e),
+                       NOTE("integration", e.get("entry_id") or f"{e.get('domain')}|{e.get('title')}")])
+    wi.auto_filter.ref = f"A1:F{wi.max_row}"
     wb.save(out_path)
 
 

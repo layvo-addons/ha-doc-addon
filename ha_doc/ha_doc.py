@@ -68,6 +68,7 @@ def fetch_all(url, token, supervisor=False, light=False):
         "areas": c.ws_call("config/area_registry/list") or [],
         "floors": c.ws_call("config/floor_registry/list") or [],
         "entries": c.ws_call("config_entries/get") or [],
+        "manifests": {m.get("domain"): m.get("name") for m in (c.ws_call("manifest/list") or []) if isinstance(m, dict)},
         "automations": [],
         "scripts": [],
         "scenes": [],
@@ -148,7 +149,15 @@ def demo_data():
             {"domain": "hue", "title": "Philips Hue", "state": "loaded", "source": "zeroconf"},
             {"domain": "mqtt", "title": "MQTT", "state": "loaded", "source": "user"},
             {"domain": "met", "title": "Wetter", "state": "loaded", "source": "onboarding"},
+            {"domain": "esphome", "title": "Steckdose Wohnzimmer", "state": "loaded", "source": "zeroconf"},
+            {"domain": "esphome", "title": "Steckdose Büro", "state": "loaded", "source": "zeroconf"},
+            {"domain": "esphome", "title": "Sensor Keller", "state": "setup_retry", "source": "zeroconf"},
+            {"domain": "hacs", "title": "", "state": "loaded", "source": "user"},
+            {"domain": "backup", "title": "Backup", "state": "loaded", "source": "system"},
+            {"domain": "cast", "title": "Google Cast", "state": "not_loaded", "source": "zeroconf", "disabled_by": "user"},
         ],
+        "manifests": {"zha": "Zigbee Home Automation", "hue": "Philips Hue", "mqtt": "MQTT", "met": "Meteorologisk institutt (Met.no)",
+                      "esphome": "ESPHome", "hacs": "HACS", "backup": "Backup", "cast": "Google Cast"},
         "automations": [
             {"entity_id": "automation.flur_licht", "state": "on",
              "attrs": {"friendly_name": "Flur Licht bei Bewegung", "last_triggered": now, "mode": "restart"},
@@ -210,6 +219,48 @@ def demo_data():
 
 IGNORE_UNAVAILABLE_DOMAINS = ("scene", "button", "automation", "script", "stt", "tts", "conversation", "event",
                               "notify", "ai_task", "input_button")
+
+ENTRY_STATE_DE = {"loaded": "läuft", "setup_retry": "neuer Versuch", "setup_error": "Fehler beim Einrichten",
+                  "not_loaded": "nicht geladen", "setup_in_progress": "wird eingerichtet", "unload_in_progress": "wird entladen",
+                  "failed_unload": "Entladen fehlgeschlagen", "migration_error": "Migrationsfehler"}
+ENTRY_SOURCE_DE = {"user": "von Hand", "system": "System", "onboarding": "Ersteinrichtung", "import": "Import (YAML)",
+                   "integration_discovery": "durch andere Integration", "hassio": "durch App", "reauth": "von Hand",
+                   "reconfigure": "von Hand", "ignore": "ignoriert"}
+DISCOVERY_SOURCES = ("zeroconf", "dhcp", "ssdp", "bluetooth", "usb", "homekit", "mqtt")
+
+
+def integration_name(data, domain):
+    """Anzeigename einer Integration (aus dem Manifest), sonst die Domain."""
+    return (data.get("manifests") or {}).get(domain) or domain or "?"
+
+
+def entry_title(data, e):
+    """Name eines Integrations-Eintrags; ohne Titel der Name der Integration."""
+    return (e.get("title") or "").strip() or integration_name(data, e.get("domain"))
+
+
+def entry_state_de(e):
+    if e.get("disabled_by"):
+        return "deaktiviert"
+    st = e.get("state") or ""
+    return ENTRY_STATE_DE.get(st, st)
+
+
+def entry_source_de(e):
+    src = e.get("source") or ""
+    if src in DISCOVERY_SOURCES:
+        return f"automatisch gefunden ({src})"
+    return ENTRY_SOURCE_DE.get(src, src)
+
+
+def grouped_entries(data):
+    """Integrations-Einträge nach Integration gruppiert: [(Name, Domain, [Einträge])], nach Name sortiert."""
+    groups = defaultdict(list)
+    for e in data["entries"]:
+        groups[e.get("domain") or "?"].append(e)
+    out = [(integration_name(data, d), d, sorted(es, key=lambda x: entry_title(data, x).lower())) for d, es in groups.items()]
+    return sorted(out, key=lambda g: g[0].lower())
+
 
 SECTIONS = [("uebersicht", "Übersicht"), ("bereiche", "Bereiche und Geräte"), ("integrationen", "Integrationen"),
             ("netzwerk", "Netzwerk (nur Fritz!Box / UniFi)"),
@@ -854,7 +905,7 @@ def build_pdf(data, out_path, title="Home Assistant Dokumentation", sections=Non
     story = main if on("uebersicht") else []
     story.append(Paragraph("Übersicht", H1))
     story.append(table([["Kennzahl", "Anzahl"], ["Entitäten (aktiv)", len(data["states"])], ["Geräte", len(data["devices"])],
-                        ["Bereiche", len(data["areas"])], ["Integrationen", len(data["entries"])],
+                        ["Bereiche", len(data["areas"])], ["Integrationen", len({e.get("domain") for e in data["entries"]})], ["Integrations-Einträge", len(data["entries"])],
                         ["Automatisierungen", len(data["automations"])], ["Skripte", len(data["scripts"])],
                         ["Szenen", len(data["scenes"])], ["Nicht verfügbare Entitäten", len(unavailable)]],
                        [90 * mm, 30 * mm]))
@@ -959,15 +1010,37 @@ def build_pdf(data, out_path, title="Home Assistant Dokumentation", sections=Non
     story = main if on("integrationen") else []
     story.append(Paragraph("Integrationen", H1))
     ek = lambda e: e.get("entry_id") or f"{e.get('domain')}|{e.get('title')}"
-    entries_sorted = sorted(data["entries"], key=lambda x: x.get("domain", ""))
-    if any(NOTE("integration", ek(e)) for e in entries_sorted):
-        story.append(table([["Integration", "Domain", "Status", "Quelle", "Bemerkung"]] +
-                           [[e.get("title"), e.get("domain"), e.get("state"), e.get("source"), NOTE("integration", ek(e))] for e in entries_sorted],
-                           [42 * mm, 30 * mm, 22 * mm, 22 * mm, W - 116 * mm]))
-    else:
-        story.append(table([["Integration", "Domain", "Status", "Quelle"]] +
-                           [[e.get("title"), e.get("domain"), e.get("state"), e.get("source")] for e in entries_sorted],
-                           [55 * mm, 40 * mm, 30 * mm, W - 125 * mm]))
+    groups = grouped_entries(data)
+    story.append(P(f"{len(groups)} Integrationen mit {len(data['entries'])} Einträgen. Eine Integration kann mehrere Einträge haben, "
+                   "zum Beispiel einen pro Gerät. Gruppiert nach Integration, alphabetisch."))
+    with_notes = any(NOTE("integration", ek(e)) for _, _, es in groups for e in es)
+    head = ["Integration", "Eintrag", "Status", "Quelle"] + (["Bemerkung"] if with_notes else [])
+    widths = ([38 * mm, 50 * mm, 26 * mm, 30 * mm, W - 144 * mm] if with_notes else [45 * mm, 57 * mm, 26 * mm, W - 128 * mm])
+    rows, style = [head], [("GRID", (0, 0), (-1, -1), 0.25, colors.lightgrey), ("VALIGN", (0, 0), (-1, -1), "TOP"),
+                           ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#e1f3fc"))]
+    for gi, (name, dom, es) in enumerate(groups):
+        first = len(rows)
+        for i, e in enumerate(es):
+            label = (f"<b>{escape(name)}</b>" + (f" ({len(es)})" if len(es) > 1 else "")) if i == 0 else ""
+            st = entry_state_de(e)
+            if e.get("disabled_by"):
+                st_html = f'<font color="#777777">{escape(st)}</font>'
+            elif e.get("state") != "loaded":
+                st_html = f'<font color="#b00020">{escape(st)}</font>'
+            else:
+                st_html = escape(st)
+            r = [Paragraph(label, CELL), Paragraph(escape(entry_title(data, e)), CELL), Paragraph(st_html, CELL),
+                 Paragraph(escape(entry_source_de(e)), CELL)]
+            if with_notes:
+                r.append(Paragraph(escape(NOTE("integration", ek(e))), CELL))
+            rows.append(r)
+        last = len(rows) - 1
+        if gi % 2:
+            style.append(("BACKGROUND", (0, first), (-1, last), colors.HexColor("#f5f8fa")))
+        style.append(("LINEABOVE", (0, first), (-1, first), 0.8, colors.HexColor("#9aa7b0")))
+    t = Table([[c if not isinstance(c, str) else Paragraph(escape(c), CELL) for c in r] for r in rows], colWidths=widths, repeatRows=1)
+    t.setStyle(TableStyle(style))
+    story.append(t)
     story.append(PageBreak())
 
     # Netzwerk

@@ -14,7 +14,7 @@ Das PDF enthält je nach Auswahl:
 |---|---|
 | Übersicht | Kennzahlen (Entitäten, Geräte, Bereiche, Integrationen …) und Entitäten nach Domain |
 | Bereiche und Geräte | pro Bereich ein Kasten je Gerät mit Hersteller, Modell, IP (falls bekannt) und allen Entitäten |
-| Integrationen | alle eingerichteten Integrationen mit Status und Quelle |
+| Integrationen | alle eingerichteten Integrationen, nach Integration gruppiert, mit Status und Quelle |
 | Netzwerk | IP, MAC, Hersteller, VLAN und WLAN/LAN der Geräte im Heimnetz (nur UniFi oder Fritz!Box, siehe Kapitel 7) |
 | Automatisierungen (Text) | Auslöser, Bedingungen und Aktionen in Klartext, Blueprint-Automatisierungen mit ihren Eingaben |
 | Automatisierungen (Schema) | Auslöser → Bedingungen → Aktionen als Schema |
@@ -47,7 +47,7 @@ Updates erscheinen im Add-on-Store: **⋮ › Nach Updates suchen**, danach **Ak
 
 Die Oberfläche folgt dem Hell-/Dunkelmodus von Home Assistant.
 
-**Abschnitte.** Hake an, was ins PDF soll. Der Abschnitt «Änderungen seit letztem Stand» ist standardmässig ausgeschaltet.
+**Abschnitte.** Hake an, was ins PDF soll. Der Abschnitt «Änderungen seit letztem Stand» ist standardmässig ausgeschaltet. Mit **«Alle auswählen»** und **«Keine auswählen»** setzt oder entfernst du alle Haken auf einmal; gesendet wird erst mit «PDF erstellen».
 
 **Optionen.**
 
@@ -55,7 +55,7 @@ Die Oberfläche folgt dem Hell-/Dunkelmodus von Home Assistant.
 * *Automatisierungen, Skripte, Szenen: nur mit fehlenden Entitäten* zeigt nur Einträge, die auf nicht mehr vorhandene Entitäten verweisen. Das ist praktisch zum Aufräumen.
 * *Änderungsvergleich: diesen Stand als neue Referenz speichern* (nur relevant mit dem Abschnitt «Änderungen», Kapitel 8).
 
-**Bereiche.** Unter «Bereiche auswählen» lässt sich die Dokumentation auf einzelne Bereiche beschränken (inklusive «Ohne Bereich»).
+**Bereiche.** Unter «Bereiche auswählen» lässt sich die Dokumentation auf einzelne Bereiche beschränken (inklusive «Ohne Bereich»). Auch hier gibt es die Knöpfe «Alle auswählen» und «Keine auswählen».
 
 **Deckblatt.** Unter **«Deckblatt: Ersteller und Kunde (optional)»** erfasst du Firma (Ersteller) mit Adresse, Telefon, E-Mail und Webseite, den Kunden mit Adresse und Objekt/Projekt sowie Version/Stand und Bearbeiter. Mit **«Angaben auf dem Deckblatt anzeigen»** erscheinen sie auf dem Deckblatt der PDFs, auch im Monatsbericht. Standardmässig ist die Funktion aus. Gespeichert wird in `cover.json` im Ordner `ha_doc` der Freigabe. Das PDF enthält dann Namen und Adressen; für Weitergabe und Datenschutz bist du selbst verantwortlich.
 
@@ -88,6 +88,8 @@ Mit dem Knopf **«Einstellungen Monatsbericht»** auf der Hauptseite öffnest du
 | Optionen | Diagnose-Entitäten ausblenden, nur Einträge mit fehlenden Entitäten |
 | Bereiche auswählen | nur diese Bereiche (Standard: alle) |
 
+Bei Abschnitten und Bereichen helfen die Knöpfe «Alle auswählen» und «Keine auswählen».
+
 Mit **Speichern** werden die Einstellungen übernommen. Die Auswahl auf der Hauptseite gilt nur für Dateien, die du selbst erstellst, und ist vom Monatsbericht getrennt. Logo und Deckblatt-Angaben der Hauptseite werden im Bericht übernommen.
 
 **Wichtig:**
@@ -103,7 +105,7 @@ Mit **Speichern** werden die Einstellungen übernommen. Die Auswahl auf der Haup
 
 * **Geräte:** pro Bereich eine Zeile, darunter die Geräte mit Hersteller/Modell, IP und Anzahl Entitäten. Die **Entitäten sind eingeklappt**. Mit dem **Plus am linken Rand** neben einem Gerät klappst du sie auf, mit dem Minus wieder zu. Die Ebenen-Knöpfe **1** und **2** oben links klappen alles auf einmal zu oder auf. Pro Entität stehen Name, Entität-ID und aktueller Zustand.
 * **Netzwerk:** IP, MAC, Hersteller, VLAN, Verbindung und Status mit Filter (nur mit UniFi oder Fritz!Box).
-* **Integrationen:** Integration, Domain, Status, Quelle.
+* **Integrationen:** Integration, Eintrag, Domain, Status, Quelle, nach Integration sortiert.
 
 Der Monatsbericht erstellt nur das PDF, keine Excel-Datei.
 
