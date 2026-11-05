@@ -5,6 +5,8 @@ import datetime as dt
 import html
 import json
 import os
+import signal
+import sys
 import threading
 import time
 import traceback
@@ -491,7 +493,15 @@ class Handler(BaseHTTPRequestHandler):
         print(fmt % args, flush=True)
 
 
+def _stop(signum, frame):
+    """Beim Stoppen durch den Supervisor (SIGTERM) sofort sauber beenden statt nach 10 Sekunden abgebrochen zu werden."""
+    print("HA-Doku-Server wird beendet", flush=True)
+    sys.exit(0)
+
+
 if __name__ == "__main__":
+    signal.signal(signal.SIGTERM, _stop)
+    signal.signal(signal.SIGINT, _stop)
     print(f"HA-Doku-Server auf Port {PORT}", flush=True)
     threading.Thread(target=scheduler_loop, daemon=True).start()
     ThreadingHTTPServer(("0.0.0.0", PORT), Handler).serve_forever()
