@@ -1,5 +1,12 @@
 # Änderungen
 
+## 0.7.2 (Beta)
+- **Integrationen übersichtlicher:** Im PDF und in Excel nach Integration gruppiert und alphabetisch sortiert, zum Beispiel «ESPHome (10)» mit den einzelnen Einträgen darunter. Angezeigt wird der Name der Integration (zum Beispiel «Zigbee Home Automation» statt `zha`).
+- Status und Quelle auf Deutsch («läuft», «neuer Versuch», «deaktiviert»; «von Hand», «automatisch gefunden»). Einträge, die nicht laufen, sind rot markiert, deaktivierte grau.
+- Fehlerbehebung: Einträge ohne Titel (zum Beispiel HACS) zeigen den Namen der Integration statt eines leeren Felds.
+- Die Übersicht zählt Integrationen und Integrations-Einträge getrennt.
+- Neu: Knöpfe «Alle auswählen» und «Keine auswählen» bei Abschnitten und Bereichen, auf der Hauptseite und bei «Einstellungen Monatsbericht».
+
 ## 0.7.1 (Beta)
 - Beta-Version auf den Stand von 0.7.0 gebracht.
 - Die Oberfläche zeigt den tatsächlichen Ablageordner an (in der Beta `ha_doc_beta`, vorher stand immer «Ordner ha_doc»). Gilt für die Hauptseite und die Seite «Bemerkungen erfassen».
