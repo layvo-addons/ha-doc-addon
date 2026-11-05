@@ -1,5 +1,8 @@
 # Änderungen
 
+## 0.6.3
+- Testupdate: keine Funktionsänderung.
+
 ## 0.6.2
 - Bereiche ohne Geräte und ohne eigene Entitäten erscheinen jetzt im PDF mit dem Hinweis «keine Geräte oder Entitäten in diesem Bereich» (vorher wurden sie weggelassen).
 - Wird kein Abschnitt gewählt, erscheint ein Hinweisfenster, bevor das Formular gesendet wird.
