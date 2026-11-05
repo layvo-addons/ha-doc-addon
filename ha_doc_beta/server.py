@@ -235,7 +235,7 @@ def toggle_bar(name, extra=""):
 
 
 def checkbox(name, value, label, checked):
-    return f'<label class="opt"><input type="checkbox" name="{name}" value="{html.escape(value)}"{" checked" if checked else ""}> {html.escape(label)}</label>'
+    return f'<label class="opt"><input type="checkbox" name="{name}" value="{html.escape(value)}"{" checked" if checked else ""}><span>{html.escape(label)}</span></label>'
 
 
 def cover_block():
@@ -253,7 +253,7 @@ def cover_block():
     return (
         '<details><summary>Deckblatt: Ersteller und Kunde (optional)</summary>'
         '<form method="post" action="cover">'
-        f'<label class="opt"><input type="checkbox" name="enabled" value="1"{" checked" if c["enabled"] else ""}> Angaben auf dem Deckblatt anzeigen</label>'
+        f'<label class="opt"><input type="checkbox" name="enabled" value="1"{" checked" if c["enabled"] else ""}><span>Angaben auf dem Deckblatt anzeigen</span></label>'
         '<div class="opts" style="grid-template-columns:repeat(auto-fit,minmax(260px,1fr))">'
         + group("Ersteller (Firma)", "creator") + group("Kunde", "customer") + group("Dokument", "doc") +
         '</div><p class="msg">Das PDF enthält dann diese Namen und Adressen. Du bist für Weitergabe und Datenschutz selbst verantwortlich.</p>'
@@ -268,9 +268,9 @@ def logo_block():
     return (
         '<details><summary>Logo im PDF</summary>'
         '<form method="post" action="branding"><div class="opts" style="grid-template-columns:1fr">'
-        f'<label class="opt"><input type="radio" name="mode" value="layvo"{chk("layvo")}> layvo-Logo</label>'
-        f'<label class="opt"><input type="radio" name="mode" value="none"{chk("none")}> Kein Logo</label>'
-        f'<label class="opt"><input type="radio" name="mode" value="custom" id="r_custom"{chk("custom")}> Eigenes Logo (PNG oder JPG, max. 2 MB){cust}</label>'
+        f'<label class="opt"><input type="radio" name="mode" value="layvo"{chk("layvo")}><span>layvo-Logo</span></label>'
+        f'<label class="opt"><input type="radio" name="mode" value="none"{chk("none")}><span>Kein Logo</span></label>'
+        f'<label class="opt"><input type="radio" name="mode" value="custom" id="r_custom"{chk("custom")}><span>Eigenes Logo (PNG oder JPG, max. 2 MB){cust}</span></label>'
         '</div><p><input type="file" id="lf" accept="image/png,image/jpeg"> '
         '<input type="hidden" name="data" id="ld"><button class="sec" style="margin-left:0">Logo speichern</button></p></form>'
         '<script>document.getElementById("lf").onchange=function(){var f=this.files[0];if(!f)return;'
@@ -290,9 +290,12 @@ h1{{margin-top:0}} h2{{font-size:15px;margin:18px 0 6px;color:var(--muted)}}
 button{{background:var(--accent);color:#fff;border:0;padding:12px 22px;border-radius:8px;font-size:16px;cursor:pointer}}
 button[disabled]{{opacity:.5;cursor:wait}} button.del{{background:transparent;color:var(--link);border:1px solid var(--line);padding:4px 10px;font-size:13px}} a.btn{{display:inline-block;padding:12px 22px;border-radius:8px;font-size:16px;text-decoration:none;margin-left:8px}} a.btn.sec{{border:1px solid var(--link);color:var(--link)}} label.fld{{display:block;margin:6px 0;font-size:13px;color:var(--muted)}} label.fld input,label.fld textarea{{display:block;width:100%;box-sizing:border-box;margin-top:2px;padding:6px 8px;border:1px solid var(--line);border-radius:6px;background:var(--card);color:var(--fg);font:inherit}} button.sec{{background:transparent;color:var(--link);border:1px solid var(--link);margin-left:8px}} table{{border-collapse:collapse;width:100%;margin-top:18px;background:var(--card)}}
 td,th{{border:1px solid var(--line);padding:8px 10px;text-align:left}} .msg{{margin:14px 0;color:var(--muted)}}
+p.btns{{display:flex;flex-wrap:wrap;gap:8px}} p.btns .btn,p.btns button.sec{{margin-left:0}}
+.files{{overflow-x:auto}} .files td a{{word-break:break-all}}
 .tgl{{margin:4px 0}} td.cb,th.cb{{width:28px;text-align:center}} .tgl button.del{{margin-left:6px}} button.mini{{background:transparent;color:var(--link);border:1px solid var(--line);padding:4px 10px;font-size:13px;margin-right:6px}}
 .opts{{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:6px;margin:8px 0}}
-.opt{{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:8px 10px;cursor:pointer;display:block}}
+.opt{{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:8px 10px;cursor:pointer;display:flex;align-items:flex-start;gap:8px}}
+.opt input{{flex:none;margin:3px 0 0}} .opt span{{flex:1;min-width:0}}
 details{{margin:10px 0}} summary{{cursor:pointer;color:var(--link)}} a{{color:var(--link)}}
 .err{{background:var(--errbg);padding:10px;overflow:auto;font-size:12px}}
 </style>
@@ -327,7 +330,7 @@ def schedule_page(msg="", ok=True):
 <form method="post" action="schedule">
 <h2>Zeitplan</h2>
 <div class="opts" style="grid-template-columns:1fr">{checkbox("enabled", "1", "Monatlichen Bericht automatisch erstellen", c["enabled"])}</div>
-<div class="opts" style="grid-template-columns:repeat(auto-fit,minmax(200px,1fr))">
+<div class="opts" style="grid-template-columns:repeat(auto-fit,minmax(200px,1fr));align-items:end">
 <label class="fld">Tag im Monat (1 bis 28)<input type="number" name="day" min="1" max="28" value="{c['day']}" required></label>
 <label class="fld">Uhrzeit (HH:MM, Zeitzone von Home Assistant)<input type="text" name="time" pattern="([01][0-9]|2[0-3]):[0-5][0-9]" value="{E(c['time'], quote=True)}" required></label>
 <label class="fld">Anzahl aufbewahrter PDFs (1 bis 100)<input type="number" name="keep_last" min="1" max="100" value="{c['keep_last']}" required></label>
@@ -336,7 +339,7 @@ def schedule_page(msg="", ok=True):
 <h2>Abschnitte</h2>{toggle_bar("sections")}<div class="opts">{secs}</div>
 <h2>Optionen</h2><div class="opts" style="grid-template-columns:1fr">{flt}</div>
 {area_html}
-<p><button>Speichern</button><a class="btn sec" href="./">Abbrechen</a></p></form>
+<p class="btns"><button>Speichern</button><a class="btn sec" href="./">Abbrechen</a></p></form>
 <p class="msg">{E(schedule_info())}</p>
 </body></html>"""
 
@@ -378,14 +381,14 @@ def page():
 <h2>Abschnitte</h2>{toggle_bar("sections")}<div class="opts">{boxes}</div>
 <h2>Optionen</h2><div class="opts" style="grid-template-columns:1fr">{extra}</div>
 {area_html}
-<p><button name="action" value="generate" {btn}>PDF erstellen</button>
+<p class="btns"><button name="action" value="generate" {btn}>PDF erstellen</button>
 <button name="action" value="xlsx" class="sec" {btn} title="Excel-Datei mit Geräten (Entitäten ein-/ausklappbar), Netzwerk und Integrationen. Verwendet Bereiche und Diagnose-Filter.">Excel erstellen</button>
 <a class="btn sec" href="notes" title="Eigene Bemerkungen zu Bereichen, Geräten, Entitäten, Automatisierungen u. a. erfassen">Bemerkungen erfassen</a>
 <a class="btn sec" href="schedule" title="Automatischen Monatsbericht einschalten, Zeitpunkt, Abschnitte und Filter festlegen">Einstellungen Monatsbericht</a></p></form>
 <h2>Darstellung</h2>
 {logo_html}
 <div class="msg">{html.escape(state["msg"])}</div>{err}
-<form method="post" action="delete">{multi}<table><tr><th class="cb"></th><th>Datei</th><th>Grösse</th><th></th></tr>{rows}</table></form>
+<form method="post" action="delete">{multi}<div class="files"><table><tr><th class="cb"></th><th>Datei</th><th>Grösse</th><th></th></tr>{rows}</table></div></form>
 <p class="msg">{html.escape(schedule_info())}<br>Ablage: Freigabe «share» → Ordner {html.escape(OUT_FOLDER)}</p>
 </body></html>"""
 
