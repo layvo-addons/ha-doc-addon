@@ -1,5 +1,10 @@
 # Änderungen
 
+## 0.7.0
+- **Monatsbericht-Einstellungen in der Oberfläche:** Der Knopf «Auswahl für Monatsbericht speichern» heisst jetzt **«Einstellungen Monatsbericht»** und öffnet eine eigene Seite mit Zeitplan (ein/aus, Tag, Uhrzeit, Anzahl PDFs), Abschnitten, Filtern und Bereichen. Änderungen gelten sofort, ein Neustart ist nicht mehr nötig.
+- Die Monatsbericht-Optionen sind aus der Konfiguration des Add-ons entfernt. Bisherige Werte (Zeitplan, Abschnitte, gespeicherte Auswahl) werden beim ersten Start übernommen. Gespeichert wird in `share/ha_doc/schedule.json` und bleibt bei einer Neuinstallation erhalten.
+- Die Auswahl auf der Hauptseite gilt nur noch für manuell erstellte Dateien und ist nicht mehr mit dem Monatsbericht gekoppelt.
+
 ## 0.6.2
 - Bereiche ohne Geräte und ohne eigene Entitäten erscheinen jetzt im PDF mit dem Hinweis «keine Geräte oder Entitäten in diesem Bereich» (vorher wurden sie weggelassen).
 - Wird kein Abschnitt gewählt, erscheint ein Hinweisfenster, bevor das Formular gesendet wird.

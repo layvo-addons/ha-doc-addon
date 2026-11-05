@@ -1,6 +1,6 @@
 ---
 title: "layvo Doku – Handbuch"
-subtitle: "Home Assistant automatisch dokumentieren (PDF und Excel) – Version 0.6"
+subtitle: "Home Assistant automatisch dokumentieren (PDF und Excel) – Version 0.7"
 lang: de
 ---
 
@@ -66,7 +66,7 @@ Die Oberfläche folgt dem Hell-/Dunkelmodus von Home Assistant.
 | PDF erstellen | erzeugt das PDF mit der aktuellen Auswahl |
 | Excel erstellen | erzeugt die Excel-Datei (Kapitel 6); es gelten die Bereiche und der Diagnose-Filter |
 | Bemerkungen erfassen | öffnet die Seite für eigene Bemerkungen (Kapitel 9) |
-| Auswahl für Monatsbericht speichern | speichert die aktuelle Auswahl für den automatischen Bericht (Kapitel 5) |
+| Einstellungen Monatsbericht | öffnet die Seite für den automatischen Monatsbericht (Kapitel 5) |
 
 **Dateiliste.** Alle erstellten Dateien stehen unten in der Liste. Ein Klick auf den Namen öffnet das PDF bzw. lädt die Excel-Datei herunter. Mit **Löschen** (mit Rückfrage) entfernst du einzelne Dateien. Die Dateien liegen in der Freigabe `share` im Ordner `ha_doc`, du erreichst sie also auch über Samba oder den Dateieditor.
 
@@ -74,21 +74,23 @@ Während du selbst eine Datei erstellst, aktualisiert sich die Seite automatisch
 
 # 5. Monatlicher Bericht
 
-Unter **Konfiguration** des Add-ons:
+Mit dem Knopf **«Einstellungen Monatsbericht»** auf der Hauptseite öffnest du eine eigene Seite. Sie ist aufgebaut wie die Hauptseite:
 
-| Option | Bedeutung |
+| Einstellung | Bedeutung |
 |---|---|
-| Monatlichen Bericht erstellen | schaltet die Automatik ein (Standard: aus) |
+| Monatlichen Bericht automatisch erstellen | schaltet die Automatik ein (Standard: aus) |
 | Tag im Monat | 1 bis 28 |
 | Uhrzeit | Format HH:MM, in der Zeitzone von Home Assistant |
 | Anzahl aufbewahrter PDFs | wie viele **automatische** Berichte erhalten bleiben (1 bis 100) |
-| Einstellungen der Oberfläche verwenden | Standard: an. Der Bericht nutzt die mit «Auswahl für Monatsbericht speichern» gesicherte Auswahl |
-| Abschnitt: … (Schalter) | gelten, wenn nichts gespeichert ist oder die Oberflächen-Einstellungen aus sind |
-| Diagnose-Entitäten ausblenden, Nur Einträge mit fehlenden Entitäten, Nur diese Bereiche | Filter, ebenfalls als Ersatz |
+| Abschnitte | welche Abschnitte der Bericht enthält (wie auf der Hauptseite) |
+| Optionen | Diagnose-Entitäten ausblenden, nur Einträge mit fehlenden Entitäten |
+| Bereiche auswählen | nur diese Bereiche (Standard: alle) |
+
+Mit **Speichern** werden die Einstellungen übernommen. Die Auswahl auf der Hauptseite gilt nur für Dateien, die du selbst erstellst, und ist vom Monatsbericht getrennt. Logo und Deckblatt-Angaben der Hauptseite werden im Bericht übernommen.
 
 **Wichtig:**
 
-* Nach dem Speichern der Konfiguration das Add-on **neu starten**. Es liest die Konfiguration nur beim Start.
+* Änderungen gelten sofort, ein Neustart des Add-ons ist nicht nötig. Die Einstellungen liegen in `schedule.json` im Ordner `ha_doc` der Freigabe und bleiben bei einer Neuinstallation erhalten.
 * Das Add-on muss laufen (**«Beim Systemstart starten»**). Wurde ein Termin verpasst, holt das Add-on den Bericht beim nächsten Start nach.
 * Unter der Dateiliste steht, wann der nächste Bericht erstellt wird und was er enthält.
 * Automatische Berichte heissen `ha_monatsbericht_…`, manuell erstellte Dateien `ha_dokumentation_…`. Nur automatische Berichte werden nach «Anzahl aufbewahrter PDFs» aufgeräumt. Manuelle Dateien bleiben, bis du sie löschst.
@@ -162,7 +164,7 @@ Bemerkungen zu Automatisierungen, Skripten und Szenen erscheinen im PDF, aber ni
 
 | Problem | Ursache und Lösung |
 |---|---|
-| Der Monatsbericht wurde nicht erstellt | Ist die Automatik eingeschaltet? Nach dem Speichern der Konfiguration das Add-on **neu starten**. Das Add-on muss laufen. Das Protokoll des Add-ons zeigt Fehler. |
+| Der Monatsbericht wurde nicht erstellt | Ist die Automatik unter «Einstellungen Monatsbericht» eingeschaltet und gespeichert? Das Add-on muss laufen («Beim Systemstart starten»). Das Protokoll des Add-ons zeigt Fehler. |
 | «Unknown error» bei «Nach Updates suchen» | Meist ein Zeitlimit der Oberfläche beim Neuladen des Stores. Eine Minute warten, Seite neu laden, danach aktualisieren. |
 | «No changelog found» beim Update | Harmlos. Die Datei `CHANGELOG.md` fehlt im Add-on-Ordner oder heisst anders. |
 | Netzwerk-Abschnitt leer | Integration UniFi oder Fritz!Box fehlt, oder das Verfolgen der Clients ist aus (Kapitel 7). |

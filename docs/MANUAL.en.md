@@ -1,6 +1,6 @@
 ---
 title: "layvo Doku – Manual"
-subtitle: "Automatically document Home Assistant (PDF and Excel) – Version 0.6"
+subtitle: "Automatically document Home Assistant (PDF and Excel) – Version 0.7"
 lang: en
 ---
 
@@ -68,7 +68,7 @@ The interface follows Home Assistant's light/dark theme.
 | PDF erstellen (create PDF) | Creates the PDF with the current selection |
 | Excel erstellen (create Excel) | Creates the Excel file (chapter 6); areas and the diagnostic filter apply |
 | Bemerkungen erfassen (add notes) | Opens the page for your own notes (chapter 9) |
-| Auswahl für Monatsbericht speichern (save selection for monthly report) | Saves the current selection for the automatic report (chapter 5) |
+| Einstellungen Monatsbericht (monthly report settings) | Opens the page for the automatic monthly report (chapter 5) |
 
 **File list.** All created files are listed at the bottom. Click a name to open the PDF or download the Excel file. **Löschen** (delete, with confirmation) removes single files. The files are stored in the `share` folder under `ha_doc`, so you can also reach them via Samba or the file editor.
 
@@ -76,21 +76,23 @@ While you create a file yourself, the page refreshes automatically. For an autom
 
 # 5. Monthly report
 
-Under the add-on's **Configuration**:
+The **"Einstellungen Monatsbericht"** (monthly report settings) button on the main page opens a separate page. It is laid out like the main page:
 
-| Option | Meaning |
+| Setting | Meaning |
 |---|---|
-| Create a monthly report | Switches the automation on (default: off) |
-| Day of month | 1 to 28 |
-| Time | HH:MM, in your Home Assistant time zone |
-| Number of PDFs to keep | How many **automatic** reports are kept (1 to 100) |
-| Use the settings from the web interface | Default: on. The report uses the selection saved with "save selection for monthly report" |
-| Section: … (switches) | Apply if nothing is saved or the web-interface setting is off |
-| Hide diagnostic entities, Only entries with missing entities, Only these areas | Filters, also used as fallback |
+| Monatlichen Bericht automatisch erstellen (create monthly report automatically) | Switches the automation on (default: off) |
+| Tag im Monat (day of month) | 1 to 28 |
+| Uhrzeit (time) | HH:MM, in your Home Assistant time zone |
+| Anzahl aufbewahrter PDFs (number of PDFs to keep) | How many **automatic** reports are kept (1 to 100) |
+| Abschnitte (sections) | Which sections the report contains (as on the main page) |
+| Optionen (options) | Hide diagnostic entities, only entries with missing entities |
+| Bereiche auswählen (select areas) | Only these areas (default: all) |
+
+**Speichern** (save) applies the settings. The selection on the main page applies only to files you create yourself and is separate from the monthly report. The report uses the logo and cover page details from the main page.
 
 **Important:**
 
-* **Restart the add-on** after saving the configuration. It reads the configuration only at startup.
+* Changes take effect immediately; no add-on restart is needed. The settings are stored in `schedule.json` in the `ha_doc` folder of the `share` folder and survive a reinstall.
 * The add-on must be running (**"Start on boot"**). If a run was missed, the add-on catches up at the next start.
 * Below the file list you can see when the next report is created and what it contains.
 * Automatic reports are named `ha_monatsbericht_…`, manually created files `ha_dokumentation_…`. Only automatic reports are cleaned up according to "Number of PDFs to keep". Manual files stay until you delete them.
@@ -164,7 +166,7 @@ Notes on automations, scripts and scenes appear in the PDF but not in the Excel 
 
 | Problem | Cause and solution |
 |---|---|
-| The monthly report was not created | Is the automation switched on? **Restart the add-on** after saving the configuration. The add-on must be running. The add-on log shows errors. |
+| The monthly report was not created | Is the automation switched on and saved under "Einstellungen Monatsbericht"? The add-on must be running ("Start on boot"). The add-on log shows errors. |
 | "Unknown error" when checking for updates | Usually a UI timeout while the store reloads. Wait a minute, reload the page, then update. |
 | "No changelog found" on update | Harmless. The file `CHANGELOG.md` is missing from the add-on folder or named differently. |
 | Network section empty | The UniFi or Fritz!Box integration is missing, or client tracking is off (chapter 7). |
