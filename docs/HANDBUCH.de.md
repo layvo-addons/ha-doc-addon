@@ -70,7 +70,7 @@ Die Oberfläche folgt dem Hell-/Dunkelmodus von Home Assistant.
 | Bemerkungen erfassen | öffnet die Seite für eigene Bemerkungen (Kapitel 9) |
 | Einstellungen Monatsbericht | öffnet die Seite für den automatischen Monatsbericht (Kapitel 5) |
 
-**Dateiliste.** Alle erstellten Dateien stehen unten in der Liste. Ein Klick auf den Namen öffnet das PDF bzw. lädt die Excel-Datei herunter. Mit **Löschen** (mit Rückfrage) entfernst du einzelne Dateien. Die Dateien liegen in der Freigabe `share` im Ordner `ha_doc`, du erreichst sie also auch über Samba oder den Dateieditor.
+**Dateiliste.** Alle erstellten Dateien stehen unten in der Liste. Ein Klick auf den Namen öffnet das PDF bzw. lädt die Excel-Datei herunter. Mit **Löschen** (mit Rückfrage) entfernst du eine einzelne Datei. Für mehrere Dateien hakst du die Kästchen links an (oder klickst **«Alle auswählen»**) und klickst **«Ausgewählte löschen»**; die Rückfrage nennt die Anzahl. Die Dateien liegen in der Freigabe `share` im Ordner `ha_doc`, du erreichst sie also auch über Samba oder den Dateieditor.
 
 Während du selbst eine Datei erstellst, aktualisiert sich die Seite automatisch. Bei einem automatischen Bericht lädst du die Seite selbst neu.
 

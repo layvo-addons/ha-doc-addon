@@ -1,5 +1,10 @@
 # Änderungen
 
+## 0.7.3
+- Neu: **mehrere Dateien auf einmal löschen.** In der Dateiliste hat jede Datei ein Kästchen; mit «Alle auswählen», «Keine auswählen» und «Ausgewählte löschen» (mit Rückfrage und Anzahl). Der Knopf «Löschen» pro Zeile löscht weiterhin nur diese eine Datei.
+- Darstellung: Umbrochener Text bei Abschnitten, Optionen, Bereichen, Deckblatt und Logo beginnt bündig unter der ersten Zeile statt unter dem Kästchen. Knöpfe ohne Einrückung nach einem Zeilenumbruch, die Dateiliste passt auf schmale Bildschirme, die Eingabefelder bei «Einstellungen Monatsbericht» stehen auf gleicher Höhe.
+- Fehlerbehebung: Das Add-on beendet sich beim Stoppen, Neustarten oder Aktualisieren sofort und sauber. Vorher wartete der Supervisor 10 Sekunden und brach es dann ab (Meldung «exited with non-zero exit code 137» im Protokoll). Beim ersten Update auf 0.7.3 erscheint die Meldung noch einmal, weil dabei die alte Version beendet wird.
+
 ## 0.7.2
 - **Integrationen übersichtlicher:** Im PDF und in Excel nach Integration gruppiert und alphabetisch sortiert, zum Beispiel «ESPHome (10)» mit den einzelnen Einträgen darunter. Angezeigt wird der Name der Integration (zum Beispiel «Zigbee Home Automation» statt `zha`).
 - Status und Quelle auf Deutsch («läuft», «neuer Versuch», «deaktiviert»; «von Hand», «automatisch gefunden»). Einträge, die nicht laufen, sind rot markiert, deaktivierte grau.
