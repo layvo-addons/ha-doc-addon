@@ -7,6 +7,8 @@ from collections import defaultdict
 
 import ha_doc
 
+OUT_FOLDER = os.path.basename(os.environ.get("HA_DOC_OUT", "/share/ha_doc").rstrip("/")) or "ha_doc"
+
 _E = lambda s: html.escape(str(s if s is not None else ""), quote=True)
 
 
@@ -179,7 +181,7 @@ def page(data, notes, diag=False, saved=False):
             '<p><a href="./">&larr; zurück zur Dokumentation</a></p>'
             '<p class="hint">Klicke auf ein Plus, um ein Gerät aufzuklappen und Bemerkungen zum Gerät oder zu einzelnen Entitäten zu erfassen. '
             'Die Bemerkungen erscheinen im PDF, in der Excel-Datei und im Änderungsvergleich. Mit &#9679; markierte Einträge haben bereits eine Bemerkung. '
-            f'Gespeichert wird in <code>share/ha_doc/notes.json</code> (bleibt bei einer Neuinstallation erhalten). {diag_link}</p>'
+            f'Gespeichert wird in <code>share/{html.escape(OUT_FOLDER)}/notes.json</code> (bleibt bei einer Neuinstallation erhalten). {diag_link}</p>'
             + ('<p class="msg ok">Gespeichert.</p>' if saved else "") +
             '<form method="post" action="notes"><div class="bar"><button>Speichern</button>'
             '<input type="search" id="q" placeholder="Suchen (Gerät, Entität, Name …)"></div>'
