@@ -44,7 +44,7 @@ Voraussetzung: Home Assistant OS oder Supervised (Add-ons), Architektur amd64 od
 
 ## Monatlicher Bericht
 
-Unter **Konfiguration** des Add-ons «Monatlichen Bericht erstellen» einschalten, Tag und Uhrzeit wählen. Der Bericht verwendet die Auswahl, die du in der Oberfläche mit **«Auswahl für Monatsbericht speichern»** festgelegt hast (Abschnitte, Bereiche, Filter). Ohne gespeicherte Auswahl gelten die Schalter in der Konfiguration.
+Unter **«Einstellungen Monatsbericht»** in der Oberfläche den Monatsbericht einschalten, Tag und Uhrzeit wählen sowie Abschnitte, Bereiche und Filter festlegen. Änderungen gelten sofort, die Konfiguration des Add-ons enthält keine Optionen mehr.
 Damit der Bericht wirklich erstellt wird, muss das Add-on laufen: **«Beim Systemstart starten»** einschalten.
 
 ## Datenschutz
