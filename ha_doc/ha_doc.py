@@ -932,12 +932,15 @@ def build_pdf(data, out_path, title="Home Assistant Dokumentation", sections=Non
             continue
         devs = [d for d in data["devices"] if d.get("area_id") == a["area_id"]]
         loose = [e for e, ar in area_of_ent.items() if ar == a["area_id"] and e not in ent_ids_with_device]
-        if not devs and not loose:
+        if not devs and not loose and a["area_id"] is None:
             continue
         fl = floors.get(a.get("floor_id"), {}).get("name")
         story.append(Paragraph(escape(a["name"] + (f"  ({fl})" if fl else "")), H2))
         if NOTE("area", a["area_id"] or "_none"):
             story += [note_box(NOTE("area", a["area_id"] or "_none")), Spacer(1, 1.5 * mm)]
+        if not devs and not loose:
+            story += [P("(keine Geräte oder Entitäten in diesem Bereich)", SMALL), Spacer(1, 2.5 * mm)]
+            continue
         for d in sorted(devs, key=lambda x: (x.get("name_by_user") or x.get("name") or "").lower()):
             sub = f"{d.get('manufacturer') or ''} {d.get('model') or ''}".strip()
             ip = device_ip(d)

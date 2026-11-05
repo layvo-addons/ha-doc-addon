@@ -349,7 +349,7 @@ document.documentElement.style.colorScheme=(0.299*d[0]+0.587*d[1]+0.114*d[2])<12
 </script></head><body>
 <h1>Home Assistant Dokumentation</h1>
 <p>Erstellt ein PDF deiner Installation. Wähle, was enthalten sein soll.</p>
-<form method="post" action="generate">
+<form method="post" action="generate" onsubmit="if(!document.querySelector('input[name=sections]:checked')){{alert('Bitte mindestens einen Abschnitt auswählen.');return false;}}">
 <h2>Abschnitte</h2><div class="opts">{boxes}</div>
 <h2>Optionen</h2><div class="opts" style="grid-template-columns:1fr">{extra}</div>
 {area_html}
