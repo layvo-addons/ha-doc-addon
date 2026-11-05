@@ -1,5 +1,5 @@
 name: "layvo Doku (BETA)"
-version: "0.6.2"
+version: "0.7.1"
 slug: ha_doc_beta
 description: "BETA-Version von layvo Doku zum Testen neuer Funktionen"
 url: "https://github.com/layvo-addons/ha-doc-addon"
@@ -17,44 +17,5 @@ panel_icon: mdi:file-document-outline
 panel_title: layvo Doku Beta
 map:
   - share:rw
-options:
-  schedule_enabled: false
-  schedule_day: 1
-  schedule_time: "03:00"
-  keep_last: 12
-  schedule_from_ui: true
-  schedule_uebersicht: true
-  schedule_bereiche: true
-  schedule_integrationen: true
-  schedule_netzwerk: true
-  schedule_automatisierungen: true
-  schedule_schema: true
-  schedule_skripte: true
-  schedule_szenen: true
-  schedule_helfer: true
-  schedule_auffaelligkeiten: true
-  schedule_aenderungen: false
-  schedule_hide_diagnostic: true
-  schedule_only_problems: false
-  schedule_areas: []
-schema:
-  schedule_enabled: bool
-  schedule_day: "int(1,28)"
-  schedule_time: "match(^([01][0-9]|2[0-3]):[0-5][0-9]$)"
-  keep_last: "int(1,100)"
-  schedule_from_ui: bool
-  schedule_uebersicht: bool
-  schedule_bereiche: bool
-  schedule_integrationen: bool
-  schedule_netzwerk: bool
-  schedule_automatisierungen: bool
-  schedule_schema: bool
-  schedule_skripte: bool
-  schedule_szenen: bool
-  schedule_helfer: bool
-  schedule_auffaelligkeiten: bool
-  schedule_aenderungen: bool
-  schedule_hide_diagnostic: bool
-  schedule_only_problems: bool
-  schedule_areas:
-    - "str?"
+options: {}
+schema: {}

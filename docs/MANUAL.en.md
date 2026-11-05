@@ -43,6 +43,8 @@ The section names in the add-on's web interface are shown in German.
 
 Updates appear in the add-on store: **⋮ › Check for updates**, then **Update**. The check can take up to a minute; an "Unknown error" during that time is usually just a UI timeout. Reload the page after a minute.
 
+**Beta version.** The same repository also contains **layvo Doku (BETA)**, marked "Experimental". New versions appear there first and are moved to "layvo Doku" after testing. You can install both at the same time; in the sidebar the beta is called **layvo Doku Beta**. The beta stores all files and settings in its own folder `ha_doc_beta` of the `share` folder and does not touch the data of the production version. It does not take over notes, logo and cover page details automatically: copy `notes.json`, `cover.json` and the `branding` folder from `ha_doc` to `ha_doc_beta`. Keep the monthly report switched off in the beta, otherwise you get duplicate reports. The folder names in this manual refer to the production version; for the beta, use `ha_doc_beta` instead.
+
 # 4. Using the web interface
 
 The interface follows Home Assistant's light/dark theme.

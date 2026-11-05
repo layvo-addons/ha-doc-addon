@@ -1,7 +1,9 @@
-# layvo Doku
+# layvo Doku (BETA)
 
-Seitenleiste → **layvo Doku** → Abschnitte und Optionen wählen → **PDF erstellen**.
-Die PDFs liegen in der Freigabe `share`, Ordner `ha_doc`.
+**Beta-Version zum Testen neuer Funktionen.** Sie läuft unabhängig von «layvo Doku» und speichert alles im eigenen Ordner `ha_doc_beta` der Freigabe `share`. Die Daten der produktiven Version (Ordner `ha_doc`) bleiben unberührt. Bemerkungen, Logo und Deckblatt-Angaben übernimmt die Beta nicht automatisch; kopiere dafür `notes.json`, `cover.json` und den Ordner `branding` von `share/ha_doc` nach `share/ha_doc_beta`. Lass den Monatsbericht in der Beta ausgeschaltet, sonst entstehen doppelte Berichte.
+
+Seitenleiste → **layvo Doku Beta** → Abschnitte und Optionen wählen → **PDF erstellen**.
+Die PDFs liegen in der Freigabe `share`, Ordner `ha_doc_beta`.
 
 ## Optionen im PDF
 
@@ -10,34 +12,18 @@ Die PDFs liegen in der Freigabe `share`, Ordner `ha_doc`.
 - **Konfigurations-/Diagnose-Entitäten ausblenden:** kürzere Geräteliste.
 - **Nur Einträge mit fehlenden Entitäten:** zeigt Automatisierungen, Skripte und Szenen, die auf nicht mehr vorhandene Entitäten verweisen.
 
-## Konfiguration (Monatsbericht)
+## Monatsbericht
 
-Der Monatsbericht nutzt standardmässig die Auswahl der Oberfläche: Wähle in «layvo Doku» Abschnitte und Filter und klicke auf **Auswahl für Monatsbericht speichern**. Ist nichts gespeichert oder `schedule_from_ui` aus, gelten diese Optionen:
+Klicke in «layvo Doku Beta» auf **Einstellungen Monatsbericht**. Auf der Seite stellst du ein:
 
-| Option | Bedeutung |
-|---|---|
-| schedule_enabled | Monatlichen Bericht automatisch erstellen |
-| schedule_day | Tag im Monat (1–28) |
-| schedule_time | Uhrzeit `HH:MM` (Zeitzone von Home Assistant) |
-| keep_last | Anzahl aufbewahrter automatischer Berichte (ältere werden gelöscht; manuell erstellte Dateien nie, sie löschst du in der Oberfläche) |
-| schedule_from_ui | Auswahl der Oberfläche für den Monatsbericht verwenden (Standard: an) |
-| schedule_uebersicht … schedule_auffaelligkeiten | Ein Schalter pro Abschnitt im Bericht (Standard: alle an) |
-| schedule_hide_diagnostic | Konfigurations-/Diagnose-Entitäten ausblenden (Standard: ja) |
-| schedule_only_problems | Nur Einträge mit fehlenden Entitäten |
-| schedule_areas | Nur diese Bereiche (Namen); leer = alle |
+- **Zeitplan:** Automatik ein/aus (Standard: aus), Tag im Monat (1–28), Uhrzeit `HH:MM` (Zeitzone von Home Assistant), Anzahl aufbewahrter automatischer Berichte (ältere werden gelöscht; manuell erstellte Dateien nie, sie löschst du in der Oberfläche).
+- **Abschnitte** und **Optionen** (Diagnose-Entitäten ausblenden, nur fehlende Entitäten) sowie **Bereiche**, wie auf der Hauptseite.
 
-Die Abschnitte: `uebersicht`, `bereiche`, `integrationen`, `netzwerk`, `automatisierungen` (Text), `schema` (Automatisierungen als Schema), `skripte`, `szenen`, `helfer`, `auffaelligkeiten`.
+Änderungen gelten sofort, ein Neustart ist nicht nötig. Das Add-on muss laufen («Beim Systemstart starten»). Die Einstellungen liegen in `share/ha_doc_beta/schedule.json`. Die Konfiguration des Add-ons enthält keine Optionen mehr.
 
-**Netzwerk:** Der Abschnitt «Netzwerk» zeigt IP, MAC, Hersteller, VLAN und WLAN/LAN der Geräte im Heimnetz und ergänzt bei Geräten die IP-Adresse. Er funktioniert **nur mit der Integration «UniFi Network» (UniFi-Gateway) oder «AVM FRITZ!Box Tools» (Fritz!Box)**. Bei anderen Routern bleibt er leer. Bei UniFi müssen unter «Konfigurieren» die Netzwerk-Clients verfolgt werden.
 
-**Excel:** Der Knopf «Excel erstellen» legt eine .xlsx-Datei an. Im Blatt «Geräte» sind die Entitäten zunächst eingeklappt: mit dem Plus am linken Rand (oder den Ebenen-Knöpfen 1/2 oben links) klappst du sie auf und zu. Bereiche und der Diagnose-Filter der Oberfläche gelten auch hier.
+**Deckblatt:** Unter «Deckblatt: Ersteller und Kunde» kannst du optional Firma (Ersteller) und Kunde mit Adresse sowie Version/Stand und Bearbeiter erfassen. Mit dem Haken «Angaben auf dem Deckblatt anzeigen» erscheinen sie auf dem Deckblatt (auch im Monatsbericht). Standardmässig ist das aus. Die Angaben liegen in `share/ha_doc_beta/cover.json`. Du bist für Weitergabe und Datenschutz der PDFs selbst verantwortlich.
 
-**Änderungen (optional):** Der Abschnitt «Änderungen seit letztem Stand» ist standardmässig aus. Wählst du ihn, vergleicht das PDF den aktuellen Stand mit der letzten gespeicherten Momentaufnahme (JSON im Ordner `snapshots`). Automatische Berichte speichern jedes Mal einen neuen Stand, manuelle Berichte nur mit der Option «diesen Stand als neue Referenz speichern» (der allererste Lauf speichert immer). Der Vergleich zeigt, **was** sich geändert hat, nicht **wer** es geändert hat. Home Assistant speichert das meist nicht.
-
-**Bemerkungen:** Mit dem Knopf «Bemerkungen erfassen» öffnest du eine Seite mit aufklappbaren Bereichen und Geräten (Plus-Zeichen). Dort kannst du zu Bereichen, Geräten, Entitäten, Integrationen, Netzwerk-Clients, Automatisierungen, Skripten und Szenen einen Text erfassen, dazu eine allgemeine Bemerkung für das Deckblatt. Sie erscheinen im PDF (gelb hinterlegt), in der Excel-Datei und im Änderungsvergleich. Gespeichert wird in `share/ha_doc/notes.json`.
-
-**Deckblatt:** Unter «Deckblatt: Ersteller und Kunde» kannst du optional Firma (Ersteller) und Kunde mit Adresse sowie Version/Stand und Bearbeiter erfassen. Mit dem Haken «Angaben auf dem Deckblatt anzeigen» erscheinen sie auf dem Deckblatt (auch im Monatsbericht). Standardmässig ist das aus. Die Angaben liegen in `share/ha_doc/cover.json`. Du bist für Weitergabe und Datenschutz der PDFs selbst verantwortlich.
-
-**Logo:** Unter «Logo im PDF» wählst du das layvo-Logo, kein Logo oder ein eigenes Logo (PNG oder JPG, höchstens 2 MB). Das Logo steht auf dem Deckblatt und klein in der Fusszeile der PDFs. Die Einstellung liegt in `share/ha_doc/branding` und bleibt bei einer Neuinstallation erhalten.
+**Logo:** Unter «Logo im PDF» wählst du das layvo-Logo, kein Logo oder ein eigenes Logo (PNG oder JPG, höchstens 2 MB). Das Logo steht auf dem Deckblatt und klein in der Fusszeile der PDFs. Die Einstellung liegt in `share/ha_doc_beta/branding` und bleibt bei einer Neuinstallation erhalten.
 
 Das Add-on muss laufen, schalte dafür **Beim Systemstart starten** ein.
