@@ -40,6 +40,10 @@ Alles läuft lokal in deinem Home Assistant, es werden keine Daten nach aussen g
 
 Die PDFs liegen in der Freigabe `share` im Ordner `ha_doc`.
 
+### Beta-Version
+
+Im selben Repository gibt es zusätzlich **layvo Doku (BETA)** (Kennzeichnung «Experimentell»). Dort erscheinen neue Versionen zuerst, bevor sie in «layvo Doku» übernommen werden. Beide lassen sich gleichzeitig installieren. Die Beta speichert alles im eigenen Ordner `ha_doc_beta` der Freigabe `share` und verändert die Daten der produktiven Version nicht.
+
 Voraussetzung: Home Assistant OS oder Supervised (Add-ons), Architektur amd64 oder aarch64.
 
 ## Monatlicher Bericht

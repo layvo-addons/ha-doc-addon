@@ -14,10 +14,12 @@ from urllib.parse import parse_qs, unquote
 import ha_brand
 import ha_changes
 import ha_cover
+import ha_schedule
 import ha_doc
 import ha_notes
 
 OUT_DIR = os.environ.get("HA_DOC_OUT", "/share/ha_doc")
+OUT_FOLDER = os.path.basename(OUT_DIR.rstrip("/")) or "ha_doc"
 DATA_DIR = os.environ.get("HA_DOC_DATA", "/data")
 SNAP_DIR = os.path.join(OUT_DIR, "snapshots")
 NOTES_FILE = os.path.join(OUT_DIR, "notes.json")
@@ -102,7 +104,7 @@ def is_doc_file(f):
 
 
 def cleanup_old():
-    keep = int(OPTIONS.get("keep_last", 12) or 12)
+    keep = sched()["keep_last"]
     # Nur automatisch erstellte Berichte werden aufgeräumt; manuell erstellte Dateien bleiben bis zum Löschen.
     files = sorted(f for f in os.listdir(OUT_DIR) if f.startswith("ha_monatsbericht_") and f.endswith(".pdf"))
     for f in files[:-keep] if len(files) > keep else []:
@@ -160,29 +162,9 @@ SCHED_FILE = os.path.join(DATA_DIR, "scheduler.json")
 UI_FILE = os.path.join(DATA_DIR, "schedule_ui.json")
 
 
-def load_ui_settings():
-    try:
-        with open(UI_FILE, encoding="utf-8") as f:
-            d = json.load(f)
-        sections = [x for x in d.get("sections", []) if x in ALL_SECTIONS]
-        if sections:
-            return {"sections": sections, "areas": d.get("areas"), "hide_diagnostic": bool(d.get("hide_diagnostic")),
-                    "only_problems": bool(d.get("only_problems"))}
-    except Exception:
-        pass
-    return None
-
-
-def save_ui_settings(sections, opts):
-    with open(UI_FILE, "w", encoding="utf-8") as f:
-        json.dump({"sections": sections, "areas": opts.get("areas"), "hide_diagnostic": opts.get("hide_diagnostic", False),
-                   "only_problems": opts.get("only_problems", False)}, f)
-
-
-def _apply_saved():
-    ui = load_ui_settings()
-    if ui:
-        state.update(sections=ui['sections'], areas=ui['areas'], hide_diag=ui['hide_diagnostic'], only_problems=ui['only_problems'])
+def sched():
+    """Aktuelle Einstellungen des Monatsberichts (Datei share/ha_doc/schedule.json)."""
+    return ha_schedule.load(OUT_DIR, ALL_SECTIONS, OPTIONS, UI_FILE)
 
 
 def last_run():
@@ -202,32 +184,20 @@ def mark_run(key):
 
 
 def scheduled_settings():
-    """Abschnitte und Filter für den Monatsbericht: gespeicherte Auswahl der Oberfläche, sonst Add-on-Konfiguration.
-    Rückgabe: (Abschnitte, Optionen, Quelle)."""
-    if OPTIONS.get("schedule_from_ui", True):
-        ui = load_ui_settings()
-        if ui:
-            return ui["sections"], {"hide_diagnostic": ui["hide_diagnostic"], "only_problems": ui["only_problems"], "areas": ui["areas"]}, "Oberfläche"
-    sections = [k for k in ALL_SECTIONS if OPTIONS.get(f"schedule_{k}", k != "aenderungen")] or list(ALL_SECTIONS)
-    wanted = [str(x).strip().lower() for x in (OPTIONS.get("schedule_areas") or []) if str(x).strip()]
-    areas = None
-    if wanted:
-        areas = [aid for aid, name in get_areas() if aid.lower() in wanted or name.lower() in wanted]
-        if "_none" in wanted or "ohne bereich" in wanted:
-            areas.append("_none")
-    return sections, {"hide_diagnostic": bool(OPTIONS.get("schedule_hide_diagnostic", True)),
-                      "only_problems": bool(OPTIONS.get("schedule_only_problems", False)), "areas": areas}, "Konfiguration"
+    """Abschnitte und Filter für den Monatsbericht. Rückgabe: (Abschnitte, Optionen, Quelle)."""
+    c = sched()
+    return c["sections"], {"hide_diagnostic": c["hide_diagnostic"], "only_problems": c["only_problems"], "areas": c["areas"]}, "Einstellungen Monatsbericht"
 
 
 def scheduler_loop():
     while True:
         try:
-            if OPTIONS.get("schedule_enabled"):
+            c = sched()
+            if c["enabled"]:
                 now = dt.datetime.now(get_tz())
-                day = min(int(OPTIONS.get("schedule_day", 1)), calendar.monthrange(now.year, now.month)[1])
-                hhmm = str(OPTIONS.get("schedule_time", "03:00"))
+                day = min(c["day"], calendar.monthrange(now.year, now.month)[1])
                 key = now.strftime("%Y-%m")
-                if now.day == day and now.strftime("%H:%M") >= hhmm and last_run() != key:
+                if now.day == day and now.strftime("%H:%M") >= c["time"] and last_run() != key:
                     sections, opts, _ = scheduled_settings()
                     if start_generation(sections, opts, source="automatisch"):
                         mark_run(key)
@@ -237,16 +207,17 @@ def scheduler_loop():
 
 
 def schedule_info():
-    if not OPTIONS.get("schedule_enabled"):
-        return "Automatischer Monatsbericht: aus (einschalten unter Konfiguration des Add-ons)."
+    c = sched()
+    if not c["enabled"]:
+        return "Automatischer Monatsbericht: aus (einschalten unter «Einstellungen Monatsbericht»)."
     last = last_run()
-    sections, o, source = scheduled_settings()
+    sections, o, _ = scheduled_settings()
     labels = dict(ha_doc.SECTIONS)
     inhalt = "alle Abschnitte" if len(sections) == len(ALL_SECTIONS) else ", ".join(labels[x] for x in sections)
     filt = [x for x, on in (("ohne Diagnose-Entitäten", o["hide_diagnostic"]), ("nur fehlende Entitäten", o["only_problems"]),
                             ("ausgewählte Bereiche", o["areas"] is not None)) if on]
-    return (f"Automatischer Monatsbericht: jeden Monat am {OPTIONS.get('schedule_day', 1)}. um {OPTIONS.get('schedule_time', '03:00')} Uhr "
-            f"({inhalt}" + (f"; {', '.join(filt)}" if filt else "") + f"; Einstellungen aus: {source}), die letzten {OPTIONS.get('keep_last', 12)} automatischen PDFs werden behalten"
+    return (f"Automatischer Monatsbericht: jeden Monat am {c['day']}. um {c['time']} Uhr "
+            f"({inhalt}" + (f"; {', '.join(filt)}" if filt else "") + f"), die letzten {c['keep_last']} automatischen PDFs werden behalten"
             + (f", zuletzt: {last}." if last else "."))
 
 
@@ -299,6 +270,67 @@ def logo_block():
         'document.getElementById("r_custom").checked=true;};r.readAsDataURL(f);};</script></details>')
 
 
+def head_html(refresh=""):
+    return f"""<!doctype html><html lang="de"><head><meta charset="utf-8">{refresh}
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>layvo Doku</title>
+<style>
+:root{{--bg:#fafbfc;--fg:#1f2933;--card:#fff;--line:#e1e5e9;--muted:#52606d;--accent:#03a9f4;--link:#0277bd;--errbg:#fdecea;color-scheme:light}}
+@media (prefers-color-scheme: dark){{:root{{--bg:#1c1c1c;--fg:#e1e1e1;--card:#2a2a2a;--line:#3c3c3c;--muted:#a8a8a8;--link:#4fc3f7;--errbg:#4a2626;color-scheme:dark}}}}
+body{{font-family:system-ui,sans-serif;margin:0;padding:24px;max-width:820px;color:var(--fg);background:var(--bg)}}
+h1{{margin-top:0}} h2{{font-size:15px;margin:18px 0 6px;color:var(--muted)}}
+button{{background:var(--accent);color:#fff;border:0;padding:12px 22px;border-radius:8px;font-size:16px;cursor:pointer}}
+button[disabled]{{opacity:.5;cursor:wait}} button.del{{background:transparent;color:var(--link);border:1px solid var(--line);padding:4px 10px;font-size:13px}} a.btn{{display:inline-block;padding:12px 22px;border-radius:8px;font-size:16px;text-decoration:none;margin-left:8px}} a.btn.sec{{border:1px solid var(--link);color:var(--link)}} label.fld{{display:block;margin:6px 0;font-size:13px;color:var(--muted)}} label.fld input,label.fld textarea{{display:block;width:100%;box-sizing:border-box;margin-top:2px;padding:6px 8px;border:1px solid var(--line);border-radius:6px;background:var(--card);color:var(--fg);font:inherit}} button.sec{{background:transparent;color:var(--link);border:1px solid var(--link);margin-left:8px}} table{{border-collapse:collapse;width:100%;margin-top:18px;background:var(--card)}}
+td,th{{border:1px solid var(--line);padding:8px 10px;text-align:left}} .msg{{margin:14px 0;color:var(--muted)}}
+.opts{{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:6px;margin:8px 0}}
+.opt{{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:8px 10px;cursor:pointer;display:block}}
+details{{margin:10px 0}} summary{{cursor:pointer;color:var(--link)}} a{{color:var(--link)}}
+.err{{background:var(--errbg);padding:10px;overflow:auto;font-size:12px}}
+</style>
+<script>
+try{{const cs=getComputedStyle(window.parent.document.documentElement);
+const m={{'--bg':'--primary-background-color','--fg':'--primary-text-color','--card':'--card-background-color','--line':'--divider-color','--muted':'--secondary-text-color','--accent':'--primary-color'}};
+for(const k in m){{const v=cs.getPropertyValue(m[k]).trim();if(v)document.documentElement.style.setProperty(k,v);}}
+const c=getComputedStyle(document.documentElement).getPropertyValue('--bg').trim();
+const t=document.createElement('canvas').getContext('2d');t.fillStyle=c;t.fillRect(0,0,1,1);const d=t.getImageData(0,0,1,1).data;
+document.documentElement.style.colorScheme=(0.299*d[0]+0.587*d[1]+0.114*d[2])<128?'dark':'light';}}catch(e){{}}
+</script></head><body>"""
+
+
+def schedule_page(msg="", ok=True):
+    c = sched()
+    E = html.escape
+    secs = "".join(checkbox("sections", k, label, k in c["sections"]) for k, label in ha_doc.SECTIONS)
+    areas = get_areas()
+    area_html = ""
+    if areas:
+        sel = c["areas"]
+        items = "".join(checkbox("areas", aid, name, sel is None or aid in sel) for aid, name in areas)
+        items += checkbox("areas", "_none", "Ohne Bereich", sel is None or "_none" in sel)
+        area_html = (f'<details><summary>Bereiche auswählen ({len(areas) + 1})</summary><input type="hidden" name="areas_present" value="1">'
+                     f'<div class="opts">{items}</div></details>')
+    flt = (checkbox("hide_diag", "1", "Konfigurations- und Diagnose-Entitäten ausblenden (kürzere Geräteliste)", c["hide_diagnostic"]) +
+           checkbox("only_problems", "1", "Automatisierungen, Skripte, Szenen: nur mit fehlenden Entitäten", c["only_problems"]))
+    note = f'<p class="msg"><b>{E(msg)}</b></p>' if msg else ""
+    return head_html() + f"""<h1>Einstellungen Monatsbericht</h1>
+<p><a href="./">&larr; Zurück zu layvo Doku</a></p>{note}
+<p class="msg">Einmal im Monat erstellt das Add-on automatisch ein PDF. Das Add-on muss dafür laufen («Beim Systemstart starten» einschalten). Änderungen gelten sofort, ein Neustart ist nicht nötig. Das Logo und die Deckblatt-Angaben der Hauptseite werden übernommen.</p>
+<form method="post" action="schedule">
+<h2>Zeitplan</h2>
+<div class="opts" style="grid-template-columns:1fr">{checkbox("enabled", "1", "Monatlichen Bericht automatisch erstellen", c["enabled"])}</div>
+<div class="opts" style="grid-template-columns:repeat(auto-fit,minmax(200px,1fr))">
+<label class="fld">Tag im Monat (1 bis 28)<input type="number" name="day" min="1" max="28" value="{c['day']}" required></label>
+<label class="fld">Uhrzeit (HH:MM, Zeitzone von Home Assistant)<input type="text" name="time" pattern="([01][0-9]|2[0-3]):[0-5][0-9]" value="{E(c['time'], quote=True)}" required></label>
+<label class="fld">Anzahl aufbewahrter PDFs (1 bis 100)<input type="number" name="keep_last" min="1" max="100" value="{c['keep_last']}" required></label>
+</div>
+<p class="msg">Die Anzahl gilt nur für automatisch erstellte Berichte (<code>ha_monatsbericht_…</code>). Manuell erstellte Dateien löschst du auf der Hauptseite.</p>
+<h2>Abschnitte</h2><div class="opts">{secs}</div>
+<h2>Optionen</h2><div class="opts" style="grid-template-columns:1fr">{flt}</div>
+{area_html}
+<p><button>Speichern</button><a class="btn sec" href="./">Abbrechen</a></p></form>
+<p class="msg">{E(schedule_info())}</p>
+</body></html>"""
+
+
 def page():
     files = sorted((f for f in os.listdir(OUT_DIR) if is_doc_file(f)),
                    key=lambda f: os.path.getmtime(os.path.join(OUT_DIR, f)), reverse=True)
@@ -324,29 +356,7 @@ def page():
     extra = (checkbox("save_snap", "1", "Änderungsvergleich: diesen Stand als neue Referenz speichern (sonst nur Vergleich; automatische Berichte speichern immer)", state["save_snap"]) +
              checkbox("hide_diag", "1", "Konfigurations- und Diagnose-Entitäten ausblenden (kürzere Geräteliste)", state["hide_diag"]) +
              checkbox("only_problems", "1", "Automatisierungen, Skripte, Szenen: nur mit fehlenden Entitäten", state["only_problems"]))
-    return f"""<!doctype html><html lang="de"><head><meta charset="utf-8">{refresh}
-<meta name="viewport" content="width=device-width,initial-scale=1"><title>layvo Doku</title>
-<style>
-:root{{--bg:#fafbfc;--fg:#1f2933;--card:#fff;--line:#e1e5e9;--muted:#52606d;--accent:#03a9f4;--link:#0277bd;--errbg:#fdecea;color-scheme:light}}
-@media (prefers-color-scheme: dark){{:root{{--bg:#1c1c1c;--fg:#e1e1e1;--card:#2a2a2a;--line:#3c3c3c;--muted:#a8a8a8;--link:#4fc3f7;--errbg:#4a2626;color-scheme:dark}}}}
-body{{font-family:system-ui,sans-serif;margin:0;padding:24px;max-width:820px;color:var(--fg);background:var(--bg)}}
-h1{{margin-top:0}} h2{{font-size:15px;margin:18px 0 6px;color:var(--muted)}}
-button{{background:var(--accent);color:#fff;border:0;padding:12px 22px;border-radius:8px;font-size:16px;cursor:pointer}}
-button[disabled]{{opacity:.5;cursor:wait}} button.del{{background:transparent;color:var(--link);border:1px solid var(--line);padding:4px 10px;font-size:13px}} a.btn{{display:inline-block;padding:12px 22px;border-radius:8px;font-size:16px;text-decoration:none;margin-left:8px}} a.btn.sec{{border:1px solid var(--link);color:var(--link)}} label.fld{{display:block;margin:6px 0;font-size:13px;color:var(--muted)}} label.fld input,label.fld textarea{{display:block;width:100%;box-sizing:border-box;margin-top:2px;padding:6px 8px;border:1px solid var(--line);border-radius:6px;background:var(--card);color:var(--fg);font:inherit}} button.sec{{background:transparent;color:var(--link);border:1px solid var(--link);margin-left:8px}} table{{border-collapse:collapse;width:100%;margin-top:18px;background:var(--card)}}
-td,th{{border:1px solid var(--line);padding:8px 10px;text-align:left}} .msg{{margin:14px 0;color:var(--muted)}}
-.opts{{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:6px;margin:8px 0}}
-.opt{{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:8px 10px;cursor:pointer;display:block}}
-details{{margin:10px 0}} summary{{cursor:pointer;color:var(--link)}} a{{color:var(--link)}}
-.err{{background:var(--errbg);padding:10px;overflow:auto;font-size:12px}}
-</style>
-<script>
-try{{const cs=getComputedStyle(window.parent.document.documentElement);
-const m={{'--bg':'--primary-background-color','--fg':'--primary-text-color','--card':'--card-background-color','--line':'--divider-color','--muted':'--secondary-text-color','--accent':'--primary-color'}};
-for(const k in m){{const v=cs.getPropertyValue(m[k]).trim();if(v)document.documentElement.style.setProperty(k,v);}}
-const c=getComputedStyle(document.documentElement).getPropertyValue('--bg').trim();
-const t=document.createElement('canvas').getContext('2d');t.fillStyle=c;t.fillRect(0,0,1,1);const d=t.getImageData(0,0,1,1).data;
-document.documentElement.style.colorScheme=(0.299*d[0]+0.587*d[1]+0.114*d[2])<128?'dark':'light';}}catch(e){{}}
-</script></head><body>
+    return head_html(refresh) + f"""
 <h1>Home Assistant Dokumentation</h1>
 <p>Erstellt ein PDF deiner Installation. Wähle, was enthalten sein soll.</p>
 <form method="post" action="generate" onsubmit="if(!document.querySelector('input[name=sections]:checked')){{alert('Bitte mindestens einen Abschnitt auswählen.');return false;}}">
@@ -356,12 +366,12 @@ document.documentElement.style.colorScheme=(0.299*d[0]+0.587*d[1]+0.114*d[2])<12
 <p><button name="action" value="generate" {btn}>PDF erstellen</button>
 <button name="action" value="xlsx" class="sec" {btn} title="Excel-Datei mit Geräten (Entitäten ein-/ausklappbar), Netzwerk und Integrationen. Verwendet Bereiche und Diagnose-Filter.">Excel erstellen</button>
 <a class="btn sec" href="notes" title="Eigene Bemerkungen zu Bereichen, Geräten, Entitäten, Automatisierungen u. a. erfassen">Bemerkungen erfassen</a>
-<button name="action" value="save" class="sec" title="Diese Auswahl wird für den automatischen Monatsbericht verwendet">Auswahl für Monatsbericht speichern</button></p></form>
+<a class="btn sec" href="schedule" title="Automatischen Monatsbericht einschalten, Zeitpunkt, Abschnitte und Filter festlegen">Einstellungen Monatsbericht</a></p></form>
 <h2>Darstellung</h2>
 {logo_html}
 <div class="msg">{html.escape(state["msg"])}</div>{err}
 <table><tr><th>Datei</th><th>Grösse</th><th></th></tr>{rows}</table>
-<p class="msg">{html.escape(schedule_info())}<br>Ablage: Freigabe «share» → Ordner ha_doc</p>
+<p class="msg">{html.escape(schedule_info())}<br>Ablage: Freigabe «share» → Ordner {html.escape(OUT_FOLDER)}</p>
 </body></html>"""
 
 
@@ -388,6 +398,8 @@ class Handler(BaseHTTPRequestHandler):
         if not self._allowed():
             return
         path = self.path.split("?")[0]
+        if path.endswith("/schedule") or path == "schedule":
+            return self._send(200, schedule_page())
         if path.endswith("/notes") or path == "notes":
             q = parse_qs(self.path.split("?", 1)[1]) if "?" in self.path else {}
             try:
@@ -418,6 +430,13 @@ class Handler(BaseHTTPRequestHandler):
         length = int(self.headers.get("Content-Length") or 0)
         raw = self.rfile.read(length).decode("utf-8", "replace")
         form = parse_qs(raw)
+        if self.path.split("?")[0].endswith("/schedule") or self.path.split("?")[0] == "schedule":
+            try:
+                ids = {a for a, _ in get_areas()} | {"_none"}
+                ha_schedule.save_from_form(OUT_DIR, parse_qs(raw), ALL_SECTIONS, ids)
+                return self._send(200, schedule_page("Einstellungen gespeichert."))
+            except ValueError as e:
+                return self._send(200, schedule_page(str(e)))
         if self.path.split("?")[0].endswith("/cover") or self.path.split("?")[0] == "cover":
             try:
                 ha_cover.save_from_form(OUT_DIR, parse_qs(raw))
@@ -457,15 +476,7 @@ class Handler(BaseHTTPRequestHandler):
             state["msg"] = "Bitte mindestens einen Abschnitt auswählen."
         else:
             state.update(sections=sections, areas=areas, save_snap=opts["save_snapshot"], hide_diag=opts["hide_diagnostic"], only_problems=opts["only_problems"])
-            if action == "save":
-                try:
-                    save_ui_settings(sections, opts)
-                    state["msg"] = ("Auswahl für den Monatsbericht gespeichert." if OPTIONS.get("schedule_from_ui", True)
-                                    else "Gespeichert, wird aber nicht verwendet: In der Konfiguration ist «Einstellungen der Oberfläche verwenden» aus.")
-                except Exception as e:
-                    state["msg"] = f"Speichern fehlgeschlagen: {e}"
-            else:
-                start_generation(sections, opts, fmt="xlsx" if action == "xlsx" else "pdf")
+            start_generation(sections, opts, fmt="xlsx" if action == "xlsx" else "pdf")
         self._send(303, "", extra={"Location": "./"})
 
     def log_message(self, fmt, *args):
@@ -473,7 +484,6 @@ class Handler(BaseHTTPRequestHandler):
 
 
 if __name__ == "__main__":
-    _apply_saved()
     print(f"HA-Doku-Server auf Port {PORT}", flush=True)
     threading.Thread(target=scheduler_loop, daemon=True).start()
     ThreadingHTTPServer(("0.0.0.0", PORT), Handler).serve_forever()

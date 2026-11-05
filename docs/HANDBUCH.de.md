@@ -41,6 +41,8 @@ Das PDF enthält je nach Auswahl:
 
 Updates erscheinen im Add-on-Store: **⋮ › Nach Updates suchen**, danach **Aktualisieren**. Die Suche kann bis zu einer Minute dauern; eine Fehlermeldung wie «Unknown error» ist in dieser Zeit meist nur ein Zeitlimit der Oberfläche. Lade die Seite nach einer Minute neu.
 
+**Beta-Version.** Im selben Repository gibt es zusätzlich **layvo Doku (BETA)** mit der Kennzeichnung «Experimentell». Neue Versionen erscheinen zuerst dort und werden nach der Prüfung in «layvo Doku» übernommen. Du kannst beide gleichzeitig installieren; in der Seitenleiste heisst die Beta **layvo Doku Beta**. Die Beta speichert alle Dateien und Einstellungen im eigenen Ordner `ha_doc_beta` der Freigabe `share` und verändert die Daten der produktiven Version nicht. Bemerkungen, Logo und Deckblatt-Angaben übernimmt sie nicht automatisch: Kopiere dafür `notes.json`, `cover.json` und den Ordner `branding` von `ha_doc` nach `ha_doc_beta`. Lass den Monatsbericht in der Beta ausgeschaltet, sonst entstehen doppelte Berichte. Die Ordnerangaben in diesem Handbuch beziehen sich auf die produktive Version; in der Beta gilt jeweils `ha_doc_beta`.
+
 # 4. Bedienung der Oberfläche
 
 Die Oberfläche folgt dem Hell-/Dunkelmodus von Home Assistant.
