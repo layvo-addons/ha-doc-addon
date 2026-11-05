@@ -1,6 +1,7 @@
 # Änderungen
 
 ## 0.7.3 (Beta)
+- Neu: **mehrere Dateien auf einmal löschen.** In der Dateiliste hat jede Datei ein Kästchen; mit «Alle auswählen», «Keine auswählen» und «Ausgewählte löschen» (mit Rückfrage und Anzahl). Der Knopf «Löschen» pro Zeile löscht weiterhin nur diese eine Datei.
 - Fehlerbehebung: Das Add-on beendet sich beim Stoppen, Neustarten oder Aktualisieren sofort und sauber. Vorher wartete der Supervisor 10 Sekunden und brach es dann ab (Meldung «exited with non-zero exit code 137» im Protokoll).
 
 ## 0.7.2 (Beta)

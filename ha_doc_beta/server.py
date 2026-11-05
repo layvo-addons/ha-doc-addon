@@ -227,11 +227,11 @@ def schedule_info():
 # Weboberfläche
 # --------------------------------------------------------------------------
 
-def toggle_bar(name):
-    """Knöpfe «Alle» und «Keine» für eine Gruppe von Kontrollkästchen im selben Formular."""
+def toggle_bar(name, extra=""):
+    """Knöpfe «Alle» und «Keine» für eine Gruppe von Kontrollkästchen im selben Formular (extra: weitere Knöpfe dahinter)."""
     js = "this.form.querySelectorAll('input[name={n}]').forEach(function(c){{c.checked={v};}})"
     return (f'<div class="tgl"><button type="button" class="mini" onclick="{js.format(n=name, v="true")}">Alle auswählen</button>'
-            f'<button type="button" class="mini" onclick="{js.format(n=name, v="false")}">Keine auswählen</button></div>')
+            f'<button type="button" class="mini" onclick="{js.format(n=name, v="false")}">Keine auswählen</button>{extra}</div>')
 
 
 def checkbox(name, value, label, checked):
@@ -290,7 +290,7 @@ h1{{margin-top:0}} h2{{font-size:15px;margin:18px 0 6px;color:var(--muted)}}
 button{{background:var(--accent);color:#fff;border:0;padding:12px 22px;border-radius:8px;font-size:16px;cursor:pointer}}
 button[disabled]{{opacity:.5;cursor:wait}} button.del{{background:transparent;color:var(--link);border:1px solid var(--line);padding:4px 10px;font-size:13px}} a.btn{{display:inline-block;padding:12px 22px;border-radius:8px;font-size:16px;text-decoration:none;margin-left:8px}} a.btn.sec{{border:1px solid var(--link);color:var(--link)}} label.fld{{display:block;margin:6px 0;font-size:13px;color:var(--muted)}} label.fld input,label.fld textarea{{display:block;width:100%;box-sizing:border-box;margin-top:2px;padding:6px 8px;border:1px solid var(--line);border-radius:6px;background:var(--card);color:var(--fg);font:inherit}} button.sec{{background:transparent;color:var(--link);border:1px solid var(--link);margin-left:8px}} table{{border-collapse:collapse;width:100%;margin-top:18px;background:var(--card)}}
 td,th{{border:1px solid var(--line);padding:8px 10px;text-align:left}} .msg{{margin:14px 0;color:var(--muted)}}
-.tgl{{margin:4px 0}} button.mini{{background:transparent;color:var(--link);border:1px solid var(--line);padding:4px 10px;font-size:13px;margin-right:6px}}
+.tgl{{margin:4px 0}} td.cb,th.cb{{width:28px;text-align:center}} .tgl button.del{{margin-left:6px}} button.mini{{background:transparent;color:var(--link);border:1px solid var(--line);padding:4px 10px;font-size:13px;margin-right:6px}}
 .opts{{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:6px;margin:8px 0}}
 .opt{{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:8px 10px;cursor:pointer;display:block}}
 details{{margin:10px 0}} summary{{cursor:pointer;color:var(--link)}} a{{color:var(--link)}}
@@ -345,11 +345,16 @@ def page():
     files = sorted((f for f in os.listdir(OUT_DIR) if is_doc_file(f)),
                    key=lambda f: os.path.getmtime(os.path.join(OUT_DIR, f)), reverse=True)
     rows = "".join(
-        f'<tr><td><a href="files/{html.escape(f)}" target="_blank">{html.escape(f)}</a></td>'
+        f'<tr><td class="cb"><input type="checkbox" name="file" value="{html.escape(f)}" aria-label="{html.escape(f)} auswählen"></td>'
+        f'<td><a href="files/{html.escape(f)}" target="_blank">{html.escape(f)}</a></td>'
         f'<td>{os.path.getsize(os.path.join(OUT_DIR, f)) // 1024} KB</td>'
-        f'<td><form method="post" action="delete" onsubmit="return confirm(\'Datei wirklich löschen?\')">'
-        f'<input type="hidden" name="file" value="{html.escape(f)}"><button class="del" title="Löschen">Löschen</button></form></td></tr>' for f in files
-    ) or '<tr><td colspan="3">Noch keine Dateien erstellt.</td></tr>'
+        f'<td><button class="del" name="one" value="{html.escape(f)}" title="Löschen" '
+        f'onclick="return confirm(\'Datei wirklich löschen?\')">Löschen</button></td></tr>' for f in files
+    ) or '<tr><td colspan="4">Noch keine Dateien erstellt.</td></tr>'
+    multi_js = ("var n=this.form.querySelectorAll('input[name=file]:checked').length;"
+                "if(!n){alert('Bitte mindestens eine Datei auswählen.');return false;}"
+                "return confirm(n===1?'1 Datei wirklich löschen?':n+' Dateien wirklich löschen?');")
+    multi = toggle_bar("file", f'<button class="del" name="multi" value="1" onclick="{multi_js}">Ausgewählte löschen</button>') if files else ""
     refresh = '<meta http-equiv="refresh" content="2">' if state["running"] else ""
     btn = "disabled" if state["running"] else ""
     err = f'<pre class="err">{html.escape(state["error"])}</pre>' if state["error"] else ""
@@ -380,7 +385,7 @@ def page():
 <h2>Darstellung</h2>
 {logo_html}
 <div class="msg">{html.escape(state["msg"])}</div>{err}
-<table><tr><th>Datei</th><th>Grösse</th><th></th></tr>{rows}</table>
+<form method="post" action="delete">{multi}<table><tr><th class="cb"></th><th>Datei</th><th>Grösse</th><th></th></tr>{rows}</table></form>
 <p class="msg">{html.escape(schedule_info())}<br>Ablage: Freigabe «share» → Ordner {html.escape(OUT_FOLDER)}</p>
 </body></html>"""
 
@@ -472,10 +477,18 @@ class Handler(BaseHTTPRequestHandler):
                 state["error"] = traceback.format_exc()
             return self._send(303, "", extra={"Location": "notes?saved=1"})
         if self.path.split("?")[0].endswith("/delete") or self.path.split("?")[0] == "delete":
-            name = os.path.basename((form.get("file") or [""])[0])
-            if is_doc_file(name) and os.path.isfile(os.path.join(OUT_DIR, name)):
-                os.remove(os.path.join(OUT_DIR, name))
-                state["msg"] = f"Gelöscht: {name}"
+            wanted = form["one"][:1] if form.get("one") else form.get("file", [])
+            done = []
+            for name in dict.fromkeys(os.path.basename(x) for x in wanted):
+                if is_doc_file(name) and os.path.isfile(os.path.join(OUT_DIR, name)):
+                    os.remove(os.path.join(OUT_DIR, name))
+                    done.append(name)
+            if not done:
+                state["msg"] = "Keine Datei gelöscht (keine ausgewählt)."
+            elif len(done) == 1:
+                state["msg"] = f"Gelöscht: {done[0]}"
+            else:
+                state["msg"] = f"Gelöscht: {len(done)} Dateien"
             return self._send(303, "", extra={"Location": "./"})
         sections = [x for x in form.get("sections", []) if x in ALL_SECTIONS]
         area_ids = {a for a, _ in get_areas()} | {"_none"}
