@@ -19,6 +19,7 @@ import ha_doc
 import ha_notes
 
 OUT_DIR = os.environ.get("HA_DOC_OUT", "/share/ha_doc")
+OUT_FOLDER = os.path.basename(OUT_DIR.rstrip("/")) or "ha_doc"
 DATA_DIR = os.environ.get("HA_DOC_DATA", "/data")
 SNAP_DIR = os.path.join(OUT_DIR, "snapshots")
 NOTES_FILE = os.path.join(OUT_DIR, "notes.json")
@@ -370,7 +371,7 @@ def page():
 {logo_html}
 <div class="msg">{html.escape(state["msg"])}</div>{err}
 <table><tr><th>Datei</th><th>Grösse</th><th></th></tr>{rows}</table>
-<p class="msg">{html.escape(schedule_info())}<br>Ablage: Freigabe «share» → Ordner ha_doc</p>
+<p class="msg">{html.escape(schedule_info())}<br>Ablage: Freigabe «share» → Ordner {html.escape(OUT_FOLDER)}</p>
 </body></html>"""
 
 

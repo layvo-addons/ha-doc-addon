@@ -1,5 +1,9 @@
 # Änderungen
 
+## 0.7.1
+- Die Oberfläche zeigt den tatsächlichen Ablageordner an (Hauptseite und «Bemerkungen erfassen»). In der produktiven Version bleibt das `ha_doc`, in der Beta `ha_doc_beta`.
+- Neu im selben Repository: **layvo Doku (BETA)** zum Testen neuer Versionen, mit eigener Ablage `share/ha_doc_beta`.
+
 ## 0.7.0
 - **Monatsbericht-Einstellungen in der Oberfläche:** Der Knopf «Auswahl für Monatsbericht speichern» heisst jetzt **«Einstellungen Monatsbericht»** und öffnet eine eigene Seite mit Zeitplan (ein/aus, Tag, Uhrzeit, Anzahl PDFs), Abschnitten, Filtern und Bereichen. Änderungen gelten sofort, ein Neustart ist nicht mehr nötig.
 - Die Monatsbericht-Optionen sind aus der Konfiguration des Add-ons entfernt. Bisherige Werte (Zeitplan, Abschnitte, gespeicherte Auswahl) werden beim ersten Start übernommen. Gespeichert wird in `share/ha_doc/schedule.json` und bleibt bei einer Neuinstallation erhalten.
