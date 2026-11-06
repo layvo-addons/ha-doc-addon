@@ -1,5 +1,8 @@
 # Änderungen
 
+## 0.7.8 (Beta)
+- Netzwerk mit IPFire: Der Hersteller der Netzwerkkarte (`mac_vendor`, ab HA-IPFire v0.3.7) erscheint in der Spalte «Hersteller». Liefert die Integration ein Feld `vlan`, werden die Geräte wie bei UniFi nach VLAN gruppiert. Ältere Versionen von HA-IPFire funktionieren weiterhin, die Spalten bleiben dann leer.
+
 ## 0.7.7 (Beta)
 - Neu: **Netzwerk mit IPFire.** Der Abschnitt «Netzwerk» wertet jetzt auch die DHCP-Zuteilungen der Integration HA-IPFire aus (Sensor «Aktive DHCP-Leases»): Name, IP- und MAC-Adresse, Status. Abgelaufene Zuteilungen sind als «abgelaufen» gekennzeichnet. Geräte, die schon über UniFi oder Fritz!Box bekannt sind, erscheinen nur einmal. VLAN, Hersteller und WLAN-Angaben liefert IPFire nicht.
 - Excel: Die Spalte «Quelle» im Blatt «Netzwerk» zeigt jetzt «UniFi», «Fritz!Box» oder «IPFire».
