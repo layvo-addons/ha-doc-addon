@@ -47,7 +47,9 @@ Updates erscheinen im Add-on-Store: **⋮ › Nach Updates suchen**, danach **Ak
 
 Die Oberfläche folgt dem Hell-/Dunkelmodus von Home Assistant.
 
-**Abschnitte.** Hake an, was ins PDF soll. Der Abschnitt «Änderungen seit letztem Stand» ist standardmässig ausgeschaltet. Mit **«Alle auswählen»** und **«Keine auswählen»** setzt oder entfernst du alle Haken auf einmal; gesendet wird erst mit «PDF erstellen».
+**Abschnitte.** Hake an, was ins PDF soll. Der Abschnitt «Änderungen seit letztem Stand» ist standardmässig ausgeschaltet. Mit **«Alle auswählen»** und **«Keine auswählen»** setzt oder entfernst du alle Haken auf einmal; gesendet wird erst mit «PDF erstellen». **«Vorlage: Kurzbericht»** wählt nur «Übersicht» und «Auffälligkeiten» und blendet Diagnose-Entitäten aus; das ergibt meist nur wenige Seiten und eignet sich zum Aufräumen. **«Vorlage: Vollständig»** wählt alle Abschnitte ausser dem Änderungsvergleich. Unter **«Wofür ist welcher Abschnitt?»** steht zu jedem Abschnitt ein Satz, wofür er gut ist.
+
+**Im PDF.** Das Inhaltsverzeichnis ist klickbar: Ein Klick auf eine Überschrift oder Seitenzahl springt zur Seite. In der Seitenleiste des PDF-Programms erscheinen die Kapitel zusätzlich als Lesezeichen. Ab Seite 2 steht oben der Name des Zuhauses (aus Home Assistant) und das aktuelle Kapitel.
 
 **Optionen.**
 

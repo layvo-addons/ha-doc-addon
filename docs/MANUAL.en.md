@@ -49,7 +49,9 @@ Updates appear in the add-on store: **⋮ › Check for updates**, then **Update
 
 The interface follows Home Assistant's light/dark theme.
 
-**Sections.** Tick what should go into the PDF. "Änderungen seit letztem Stand" (changes) is off by default. **"Alle auswählen"** (select all) and **"Keine auswählen"** (select none) set or clear all ticks at once; nothing is sent until you click "PDF erstellen".
+**Sections.** Tick what should go into the PDF. "Änderungen seit letztem Stand" (changes) is off by default. **"Alle auswählen"** (select all) and **"Keine auswählen"** (select none) set or clear all ticks at once; nothing is sent until you click "PDF erstellen". **"Vorlage: Kurzbericht"** (short report) selects only "Übersicht" and "Auffälligkeiten" and hides diagnostic entities; this usually gives just a few pages and is handy for cleaning up. **"Vorlage: Vollständig"** (complete) selects all sections except the change comparison. **"Wofür ist welcher Abschnitt?"** (what is each section for?) explains each section in one sentence.
+
+**In the PDF.** The table of contents is clickable: click a heading or page number to jump to the page. The chapters also appear as bookmarks in the sidebar of your PDF viewer. From page 2 on, the header shows the name of your home (from Home Assistant) and the current chapter.
 
 **Options.**
 

@@ -775,10 +775,29 @@ def build_pdf(data, out_path, title="Home Assistant Dokumentation", sections=Non
     LINE = ParagraphStyle("L", parent=BODY, fontSize=8.5, leading=11, fontName="Courier")
     CELL = ParagraphStyle("C", parent=BODY, fontSize=8, leading=10)
 
+    bkeys = {"n": 0}
+
     class Doc(BaseDocTemplate):
+        chapter = ""
+
+        def beforeDocument(self):
+            self.chapter = ""  # multiBuild baut mehrmals; Kapitel vom letzten Durchlauf nicht übernehmen
+
         def afterFlowable(self, fl):
+            if isinstance(fl, Paragraph) and fl.style.name == "TH":
+                self.chapter = "Inhaltsverzeichnis"
+            """Inhaltsverzeichnis mit Links, Lesezeichen (Seitenleiste des PDF-Programms) und Kapitel für die Kopfzeile."""
             if isinstance(fl, Paragraph) and fl.style.name in ("H1", "H2"):
-                self.notify("TOCEntry", (0 if fl.style.name == "H1" else 1, fl.getPlainText(), self.page))
+                level = 0 if fl.style.name == "H1" else 1
+                text = fl.getPlainText()
+                if not getattr(fl, "_bkey", None):  # gleicher Schlüssel in allen Durchläufen von multiBuild
+                    bkeys["n"] += 1
+                    fl._bkey = f"h{bkeys['n']}"
+                self.canv.bookmarkPage(fl._bkey)
+                self.canv.addOutlineEntry(text, fl._bkey, level=level, closed=level > 0)
+                self.notify("TOCEntry", (level, text, self.page, fl._bkey))
+                if level == 0:
+                    self.chapter = text
 
     import os
     from reportlab.pdfgen import canvas as rl_canvas
@@ -807,20 +826,46 @@ def build_pdf(data, out_path, title="Home Assistant Dokumentation", sections=Non
         canvas.drawString(x, 10 * mm, title)
         canvas.restoreState()
 
+    home = (cfg.get("location_name") or "").strip()
+
+    def header(canvas, doc):
+        """Kopfzeile ab Seite 2: Name des Zuhauses · aktuelles Kapitel (nach dem Setzen der Seite gezeichnet)."""
+        if doc.page == 1:
+            return
+        txt = " · ".join(x for x in (home, doc.chapter) if x)
+        if not txt:
+            return
+        canvas.saveState()
+        canvas.setFont("Helvetica", 8)
+        canvas.setFillColor(colors.grey)
+        canvas.drawString(20 * mm, A4[1] - 11 * mm, txt)
+        canvas.setStrokeColor(colors.HexColor("#d9e2ea"))
+        canvas.setLineWidth(0.4)
+        canvas.line(20 * mm, A4[1] - 12.5 * mm, A4[0] - 20 * mm, A4[1] - 12.5 * mm)
+        canvas.restoreState()
+
     class NumberedCanvas(rl_canvas.Canvas):
         """Zeichnet «Seite n / N» (Gesamtzahl erst am Schluss bekannt)."""
         def __init__(self, *a, **kw):
             super().__init__(*a, **kw)
             self._saved = []
+            self._marks = []
+
+        def bookmarkPage(self, key, **kw):
+            # Sprungziel erst setzen, wenn die Seite wirklich ausgegeben wird (sonst zeigen alle auf Seite 1)
+            self._marks.append((key, kw))
 
         def showPage(self):
             self._saved.append(dict(self.__dict__))
+            self._marks = []
             self._startPage()
 
         def save(self):
             total = len(self._saved)
             for st in self._saved:
                 self.__dict__.update(st)
+                for key, kw in st.get("_marks", []):
+                    rl_canvas.Canvas.bookmarkPage(self, key, **kw)
                 self.setFont("Helvetica", 8)
                 self.setFillColor(colors.grey)
                 self.drawRightString(190 * mm, 10 * mm, f"Seite {self._pageNumber} / {total}")
@@ -830,7 +875,7 @@ def build_pdf(data, out_path, title="Home Assistant Dokumentation", sections=Non
     doc = Doc(out_path, pagesize=A4, leftMargin=20 * mm, rightMargin=20 * mm, topMargin=18 * mm, bottomMargin=20 * mm,
               title=title, author="ha_doc")
     doc.addPageTemplates([PageTemplate(id="p", frames=[Frame(doc.leftMargin, doc.bottomMargin, doc.width, doc.height)],
-                                       onPage=footer)])
+                                       onPage=footer, onPageEnd=header)])
 
     def P(t, s=BODY):
         return Paragraph(escape(str(t)), s)
@@ -903,6 +948,7 @@ def build_pdf(data, out_path, title="Home Assistant Dokumentation", sections=Non
     main = story  # Hauptliste; Abschnitte, die nicht gewählt sind, landen in einer Wegwerfliste
 
     toc = TableOfContents()
+    toc.dotsMinLevel = 0
     toc.levelStyles = [ParagraphStyle("t0", fontSize=10, leftIndent=0, spaceBefore=4),
                        ParagraphStyle("t1", fontSize=9, leftIndent=12, textColor=colors.HexColor("#444444"))]
     story += [Paragraph("Inhaltsverzeichnis", ParagraphStyle("TH", parent=H1)), toc, PageBreak()]
