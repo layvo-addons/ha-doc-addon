@@ -174,6 +174,8 @@ Bemerkungen zu Automatisierungen, Skripten und Szenen erscheinen im PDF, aber ni
 | Netzwerk-Abschnitt leer | Integration UniFi oder Fritz!Box fehlt, oder das Verfolgen der Clients ist aus (Kapitel 7). |
 | Automatisierung erscheint mit Hinweis ohne Inhalt | YAML-Automatisierungen **ohne `id`** sind über die Schnittstelle nicht lesbar. Mit einer `id:` im YAML werden sie lesbar. |
 | Fehlermeldung beim PDF-Erstellen | Den Text unter dem Knopf kopieren und als Issue melden (ohne persönliche Daten). |
+| Wo finde ich die erstellten PDFs? | Am einfachsten unten in der Oberfläche von layvo Doku: Ein Klick auf den Dateinamen öffnet das PDF. Gespeichert sind sie in der Freigabe `share`, Ordner **`ha_doc`** (bei der Beta-Version **`ha_doc_beta`**). Vom PC aus erreichst du den Ordner mit der App «Samba share» unter `\\homeassistant\share\ha_doc`, in Home Assistant mit einer Datei-App wie «Studio Code Server» unter `/share/ha_doc`. |
+| Skript oder Automatisierung mit Hinweis «Konfiguration nicht über die API lesbar» | Sie ist in YAML definiert, und Home Assistant gibt die Konfiguration nicht heraus. Das PDF zeigt dann nur Name, Status und Modus. |
 | Eine Datei lässt sich nicht öffnen | Seite neu laden. Das Add-on erreicht man nur über die Seitenleiste von Home Assistant (Ingress). |
 
 # 11. Datenschutz
