@@ -20,7 +20,8 @@ Alles läuft lokal in deinem Home Assistant, es werden keine Daten nach aussen g
 - **Logo wählbar:** layvo-Logo, kein Logo oder ein eigenes Logo im PDF.
 - **Excel-Export** mit aufklappbaren Geräten (Entitäten eingeklappt), Netzwerk und Integrationen.
 - **Integrationen nach Integration gruppiert** (zum Beispiel «ESPHome (10)»), mit Status und Quelle auf Deutsch.
-- **Alle auswählen / Keine auswählen** bei Abschnitten und Bereichen.
+- **Alle auswählen / Keine auswählen** bei Abschnitten und Bereichen, dazu die **Vorlagen «Kurzbericht» und «Vollständig»**.
+- **Leicht zu lesen:** klickbares Inhaltsverzeichnis, Lesezeichen und eine Kopfzeile mit Name des Zuhauses und Kapitel.
 - **Ein Kasten pro Gerät** mit Gerätename, Hersteller/Modell und allen Entitäten (mit Namen).
 - **Automatisierungen als Text und als Schema** (Auslöser → Bedingungen → Aktionen), gleichartige Auslöser zusammengefasst.
 - **Blueprints:** Name, Beschreibung und nur die vom Standard abweichenden Eingaben.

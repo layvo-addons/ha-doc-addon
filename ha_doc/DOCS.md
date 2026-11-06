@@ -8,6 +8,8 @@ Die PDFs liegen in der Freigabe `share`, Ordner `ha_doc`.
 - **Abschnitte:** Übersicht, Bereiche und Geräte, Integrationen, Automatisierungen (Text und/oder Schema), Skripte, Szenen, Helfer, Auffälligkeiten.
 - **Bereiche auswählen:** nur einzelne Bereiche dokumentieren.
 - **Alle auswählen / Keine auswählen:** Knöpfe bei Abschnitten und Bereichen, auch bei «Einstellungen Monatsbericht».
+- **Vorlagen:** «Kurzbericht» (Übersicht und Auffälligkeiten) und «Vollständig» setzen die Haken mit einem Klick. «Wofür ist welcher Abschnitt?» erklärt die Abschnitte.
+- **Im PDF:** klickbares Inhaltsverzeichnis, Lesezeichen in der Seitenleiste und eine Kopfzeile mit Name des Zuhauses und Kapitel.
 - **Integrationen:** nach Integration gruppiert, mit Status und Quelle auf Deutsch.
 - **Dateien löschen:** einzeln mit «Löschen» oder mehrere auf einmal: Kästchen anhaken (oder «Alle auswählen») und «Ausgewählte löschen».
 - **Konfigurations-/Diagnose-Entitäten ausblenden:** kürzere Geräteliste.
