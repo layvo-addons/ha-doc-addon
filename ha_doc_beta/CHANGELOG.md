@@ -1,6 +1,7 @@
 # Änderungen
 
 ## 0.7.5 (Beta)
+- Fehlerbehebung: «PDF erstellen» brach mit «AttributeError: 'NoneType' object has no attribute 'get'» ab, wenn ein Skript oder eine Automatisierung in YAML definiert ist und Home Assistant die Konfiguration nicht herausgibt. Solche Einträge erscheinen jetzt mit Modus und dem Hinweis «Konfiguration nicht über die API lesbar».
 - Neu: **Labels** (zum Beispiel «Batteriegerät») erscheinen in der Dokumentation: in der Übersicht als eigene Tabelle (Label, Anzahl Geräte und Entitäten), im PDF beim Gerät und bei jeder Entität, in Excel in der Spalte «Labels».
 - Neu: **eigener Bereich von Entitäten.** Ist eine Entität einem anderen Bereich zugeordnet als ihr Gerät, steht das im PDF bei der Entität («Bereich: … (abweichend vom Gerät)»), und die Entität erscheint zusätzlich in ihrem Bereich unter «Entitäten von Geräten in anderen Bereichen». In Excel in der Spalte «Eigener Bereich».
 - Änderungsvergleich: erkennt jetzt auch geänderte Labels (Geräte und Entitäten) und geänderte Bereiche von Entitäten. Beim ersten Vergleich nach dem Update werden diese neuen Angaben nicht als Änderung gemeldet.
