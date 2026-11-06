@@ -123,10 +123,12 @@ def demo_data():
         "config": {"location_name": "Zuhause", "version": "2026.10.3", "time_zone": "Europe/Zurich",
                    "unit_system": {"temperature": "°C"}, "latitude": 46.9, "longitude": 7.4, "elevation": 540},
         "states": states,
-        "floors": [{"floor_id": "eg", "name": "Erdgeschoss", "level": 0}, {"floor_id": "og", "name": "Obergeschoss", "level": 1}],
+        "floors": [{"floor_id": "eg", "name": "Erdgeschoss", "level": 0}, {"floor_id": "og", "name": "Obergeschoss", "level": 1},
+                   {"floor_id": "keller", "name": "Keller", "level": None}],
         "areas": [{"area_id": "wohnzimmer", "name": "Wohnzimmer", "floor_id": "eg"},
                   {"area_id": "kueche", "name": "Küche", "floor_id": "eg"},
-                  {"area_id": "flur", "name": "Flur", "floor_id": "og"}],
+                  {"area_id": "flur", "name": "Flur", "floor_id": "og"},
+                  {"area_id": "waschkueche", "name": "Waschküche", "floor_id": "keller"}],
         "devices": [
             {"id": "d1", "name": "IKEA Deckenleuchte", "name_by_user": None, "manufacturer": "IKEA", "model": "TRADFRI Driver", "area_id": "wohnzimmer", "sw_version": "2.3.086"},
             {"id": "d2", "name": "Somfy Storen", "name_by_user": "Storen Wohnzimmer", "manufacturer": "Somfy", "model": "Sonesse 30", "area_id": "wohnzimmer", "sw_version": "1.0"},
@@ -227,6 +229,13 @@ ENTRY_SOURCE_DE = {"user": "von Hand", "system": "System", "onboarding": "Erstei
                    "integration_discovery": "durch andere Integration", "hassio": "durch App", "reauth": "von Hand",
                    "reconfigure": "von Hand", "ignore": "ignoriert"}
 DISCOVERY_SOURCES = ("zeroconf", "dhcp", "ssdp", "bluetooth", "usb", "homekit", "mqtt")
+
+
+def area_sort_key(floors, a):
+    """Sortierung der Bereiche: nach Ebene des Stockwerks, dann nach Name.
+    Stockwerke ohne Ebene (level None) und Bereiche ohne Stockwerk kommen ans Ende."""
+    lvl = (floors.get(a.get("floor_id")) or {}).get("level")
+    return (lvl if isinstance(lvl, (int, float)) else 99, a.get("name") or "")
 
 
 def integration_name(data, domain):
@@ -926,7 +935,7 @@ def build_pdf(data, out_path, title="Home Assistant Dokumentation", sections=Non
     floors = {f["floor_id"]: f for f in data["floors"]}
     story = main if on("bereiche") else []
     story.append(Paragraph("Bereiche und Geräte", H1))
-    areas_sorted = sorted(data["areas"], key=lambda a: (floors.get(a.get("floor_id"), {}).get("level", 99), a["name"]))
+    areas_sorted = sorted(data["areas"], key=lambda a: area_sort_key(floors, a))
     CELLM = ParagraphStyle("CM", parent=CELL, fontName="Courier", fontSize=7, leading=9)
 
     net = collect_network(data)

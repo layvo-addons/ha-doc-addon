@@ -53,7 +53,7 @@ def build_xlsx(data, out_path, options=None):
     _header(ws, ["Bereich / Gerät / Entität", "Hersteller / Modell", "IP", "Entität-ID", "Zustand", "Entitäten", "Bemerkung"],
             [46, 34, 16, 52, 18, 10, 60])
     ws.sheet_properties.outlinePr.summaryBelow = False  # +/- Knopf steht in der Gerätezeile
-    areas = sorted(data["areas"], key=lambda a: (floors.get(a.get("floor_id"), {}).get("level", 99), a["name"]))
+    areas = sorted(data["areas"], key=lambda a: ha_doc.area_sort_key(floors, a))
     areas.append({"area_id": None, "name": "Ohne Bereich", "floor_id": None})
 
     def add_device(title, sub, ip, ents, note=""):
