@@ -120,9 +120,11 @@ def demo_data():
            host_name="", is_guest=False, vlan=50, oui="Example Virtual Machines"),
         st("sensor.ipfire_aktive_dhcp_leases", "3", friendly_name="IPFire Aktive DHCP-Leases", state_class="measurement", leases=[
             {"ip_address": "192.168.5.100", "mac_address": "02:00:00:00:01:01", "hostname": "homeassistant", "status": "active",
-             "expired": False, "expires_never": False, "expires_at": "2026-11-06T13:06:47Z"},
+             "expired": False, "expires_never": False, "expires_at": "2026-11-06T13:06:47Z", "mac_vendor": "Example Boards Ltd."},
             {"ip_address": "192.168.5.101", "mac_address": "02:00:00:00:01:02", "hostname": None, "status": "active",
-             "expired": False, "expires_never": False, "expires_at": "2026-11-06T15:00:00Z"},
+             "expired": False, "expires_never": False, "expires_at": "2026-11-06T15:00:00Z", "mac_vendor": None},
+            {"ip_address": "192.168.20.15", "mac_address": "02:00:00:00:01:04", "hostname": "kamera-garten", "status": "active",
+             "expired": False, "expires_never": False, "expires_at": "2026-11-06T18:00:00Z", "mac_vendor": "Example Cameras Inc.", "vlan": "20"},
             {"ip_address": "192.168.5.102", "mac_address": "02:00:00:00:01:03", "hostname": "altes-tablet", "status": "expired",
              "expired": True, "expires_never": False, "expires_at": "2025-04-23T15:49:53Z"},
             {"ip_address": "192.168.5.103", "mac_address": "02:00:00:00:00:03", "hostname": "steckdose-drucker", "status": "active",
@@ -778,9 +780,14 @@ def collect_network(data):
             old = leases.get(key)
             if old and (not old["expired"] or expired):
                 continue  # aktive Zuteilung hat Vorrang vor abgelaufener
-            leases[key] = {"name": (l.get("hostname") or "").strip() or "(unbenannt)", "ip": str(l["ip_address"]), "mac": mac, "oui": "",
-                           "vlan": None, "essid": None, "ap_mac": "", "online": not expired, "platform": plat, "infra": False,
-                           "expired": expired}
+            vlan = l.get("vlan")
+            try:
+                vlan = int(vlan) if vlan not in (None, "") else None
+            except (TypeError, ValueError):
+                vlan = None
+            leases[key] = {"name": (l.get("hostname") or "").strip() or "(unbenannt)", "ip": str(l["ip_address"]), "mac": mac,
+                           "oui": (l.get("mac_vendor") or "").strip(), "vlan": vlan, "essid": None, "ap_mac": "",
+                           "online": not expired, "platform": plat, "infra": False, "expired": expired}
     return net + list(leases.values())
 
 
@@ -1142,7 +1149,7 @@ def build_pdf(data, out_path, title="Home Assistant Dokumentation", sections=Non
     story = main if on("netzwerk") else []
     story.append(Paragraph("Netzwerk", H1))
     story.append(P("Quelle: Geräte-Tracker der Integrationen UniFi Network und AVM FRITZ!Box Tools sowie DHCP-Zuteilungen der Integration "
-                   "HA-IPFire. Andere Router werden nicht ausgewertet. Bei IPFire fehlen VLAN, Hersteller und WLAN-Angaben.", SMALL))
+                   "HA-IPFire. Andere Router werden nicht ausgewertet. Bei IPFire erscheinen Hersteller und VLAN, sofern die Integration sie liefert.", SMALL))
     story.append(Spacer(1, 3 * mm))
     if not net:
         story.append(P("Keine Netzwerkdaten gefunden. Richte die Integration «UniFi Network» oder «AVM FRITZ!Box Tools» ein und aktiviere das "
