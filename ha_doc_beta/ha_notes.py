@@ -166,7 +166,7 @@ def page(data, notes, diag=False, saved=False):
     out.append(flat_section("Integrationen", "integration", [
         (ent_key(e), ha_doc.entry_title(data, e), name, f"{ha_doc.entry_title(data, e)} {name} {dom}")
         for name, dom, es in ha_doc.grouped_entries(data) for e in es]))
-    out.append(flat_section("Netzwerk-Clients (nur UniFi / Fritz!Box)", "net", [
+    out.append(flat_section("Netzwerk-Clients (UniFi, Fritz!Box, IPFire)", "net", [
         (x["mac"] or x["ip"], x["name"], f"{x['ip']}  {x['mac']}", f"{x['name']} {x['ip']} {x['mac']}")
         for x in sorted(ha_doc.collect_network(data), key=lambda x: x["name"].lower())]))
     for title, kind, coll in (("Automatisierungen", "automation", data["automations"]), ("Skripte", "script", data["scripts"]), ("Szenen", "scene", data["scenes"])):
