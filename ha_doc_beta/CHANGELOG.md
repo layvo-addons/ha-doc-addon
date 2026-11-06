@@ -1,5 +1,9 @@
 # Änderungen
 
+## 0.7.7 (Beta)
+- Neu: **Netzwerk mit IPFire.** Der Abschnitt «Netzwerk» wertet jetzt auch die DHCP-Zuteilungen der Integration HA-IPFire aus (Sensor «Aktive DHCP-Leases»): Name, IP- und MAC-Adresse, Status. Abgelaufene Zuteilungen sind als «abgelaufen» gekennzeichnet. Geräte, die schon über UniFi oder Fritz!Box bekannt sind, erscheinen nur einmal. VLAN, Hersteller und WLAN-Angaben liefert IPFire nicht.
+- Excel: Die Spalte «Quelle» im Blatt «Netzwerk» zeigt jetzt «UniFi», «Fritz!Box» oder «IPFire».
+
 ## 0.7.6 (Beta)
 - **Klickbares Inhaltsverzeichnis:** Ein Klick auf eine Überschrift im Inhaltsverzeichnis springt zur Seite. Dazu gibt es Lesezeichen in der Seitenleiste des PDF-Programms (Kapitel und Unterkapitel).
 - **Kopfzeile:** Ab Seite 2 steht oben der Name des Zuhauses und das aktuelle Kapitel, zum Beispiel «Zuhause · Bereiche und Geräte».

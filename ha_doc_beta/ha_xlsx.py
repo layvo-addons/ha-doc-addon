@@ -100,9 +100,10 @@ def build_xlsx(data, out_path, options=None):
         name_by_mac = {x["mac"]: x["name"] for x in net if x["mac"]}
         for x in sorted(net, key=lambda x: (x["vlan"] if isinstance(x["vlan"], int) else -1, ha_doc_ip_key(x))):
             conn = ("WLAN " + x["essid"] + (f" ({name_by_mac[x['ap_mac']]})" if x["ap_mac"] in name_by_mac else "")) if x["essid"] \
-                else ("Netzwerkgerät" if x["infra"] else ("LAN" if x["platform"] == "unifi" else ""))
+                else ("Netzwerkgerät" if x["infra"] else ("LAN" if x["platform"] == "unifi" else ("DHCP" if x["platform"] != "fritz" else "")))
+            status = "online" if x["online"] else ("abgelaufen" if x.get("expired") else "offline")
             wn.append([x["name"], x["ip"], x["mac"], x["oui"], x["vlan"] if x["vlan"] is not None else "", conn,
-                       "online" if x["online"] else "offline", x["platform"], NOTE("net", x["mac"] or x["ip"])])
+                       status, ha_doc.net_source(x), NOTE("net", x["mac"] or x["ip"])])
         wn.auto_filter.ref = f"A1:I{wn.max_row}"
 
     wi = wb.create_sheet("Integrationen")

@@ -238,7 +238,7 @@ SECTION_HELP = [
     ("Übersicht", "Kennzahlen auf einen Blick (eine Seite)."),
     ("Bereiche und Geräte", "Was steht wo, mit allen Entitäten. Meist der längste Teil; mit «Diagnose-Entitäten ausblenden» deutlich kürzer."),
     ("Integrationen", "Welche Integrationen eingerichtet sind und ob sie laufen."),
-    ("Netzwerk", "IP- und MAC-Adressen der Geräte (nur mit UniFi oder Fritz!Box)."),
+    ("Netzwerk", "IP- und MAC-Adressen der Geräte (mit UniFi, Fritz!Box oder IPFire)."),
     ("Automatisierungen (Text / Schema)", "Was jede Automatisierung tut. Das Schema ist anschaulich, braucht aber viele Seiten."),
     ("Skripte, Szenen, Helfer", "Zum Nachschlagen."),
     ("Auffälligkeiten", "Zum Aufräumen: nicht verfügbare Entitäten und Verweise auf gelöschte Entitäten."),

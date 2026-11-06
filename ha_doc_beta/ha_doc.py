@@ -118,6 +118,15 @@ def demo_data():
            host_name="nas.internal", is_guest=False, vlan=50, oui="Example Vendor", name="nas"),
         st("device_tracker.unifi_default_02_00_00_00_00_06", "home", source_type="router", ip="192.168.50.101", mac="02:00:00:00:00:06",
            host_name="", is_guest=False, vlan=50, oui="Example Virtual Machines"),
+        st("sensor.ipfire_aktive_dhcp_leases", "3", friendly_name="IPFire Aktive DHCP-Leases", state_class="measurement", leases=[
+            {"ip_address": "192.168.5.100", "mac_address": "02:00:00:00:01:01", "hostname": "homeassistant", "status": "active",
+             "expired": False, "expires_never": False, "expires_at": "2026-11-06T13:06:47Z"},
+            {"ip_address": "192.168.5.101", "mac_address": "02:00:00:00:01:02", "hostname": None, "status": "active",
+             "expired": False, "expires_never": False, "expires_at": "2026-11-06T15:00:00Z"},
+            {"ip_address": "192.168.5.102", "mac_address": "02:00:00:00:01:03", "hostname": "altes-tablet", "status": "expired",
+             "expired": True, "expires_never": False, "expires_at": "2025-04-23T15:49:53Z"},
+            {"ip_address": "192.168.5.103", "mac_address": "02:00:00:00:00:03", "hostname": "steckdose-drucker", "status": "active",
+             "expired": False, "expires_never": False, "expires_at": "2026-11-06T16:00:00Z"}]),
     ]
     return {
         "config": {"location_name": "Zuhause", "version": "2026.10.3", "time_zone": "Europe/Zurich",
@@ -143,6 +152,7 @@ def demo_data():
             {"entity_id": "binary_sensor.bewegung_flur", "device_id": "d3", "area_id": None, "platform": "zha", "disabled_by": None},
             {"entity_id": "light.kueche_spots", "device_id": "d4", "area_id": None, "platform": "hue", "disabled_by": None},
             {"entity_id": "sensor.alter_sensor", "device_id": None, "area_id": None, "platform": "mqtt", "disabled_by": None},
+            {"entity_id": "sensor.ipfire_aktive_dhcp_leases", "device_id": None, "area_id": None, "platform": "ipfire", "disabled_by": None},
         ] + [{"entity_id": e, "device_id": None, "area_id": None, "platform": "unifi", "disabled_by": None} for e in (
             "device_tracker.switch_rack", "device_tracker.ap_wohnzimmer", "device_tracker.steckdose_drucker", "device_tracker.imac",
             "device_tracker.nas", "device_tracker.unifi_default_02_00_00_00_00_06")],
@@ -273,7 +283,7 @@ def grouped_entries(data):
 
 
 SECTIONS = [("uebersicht", "Übersicht"), ("bereiche", "Bereiche und Geräte"), ("integrationen", "Integrationen"),
-            ("netzwerk", "Netzwerk (nur Fritz!Box / UniFi)"),
+            ("netzwerk", "Netzwerk (UniFi, Fritz!Box, IPFire)"),
             ("automatisierungen", "Automatisierungen (Text)"), ("schema", "Automatisierungen (Schema)"), ("skripte", "Skripte"), ("szenen", "Szenen"),
             ("helfer", "Helfer"), ("auffaelligkeiten", "Auffälligkeiten"), ("aenderungen", "Änderungen seit letztem Stand (optional)")]
 
@@ -730,7 +740,8 @@ def bp_rows(inputs, meta, n):
 
 
 def collect_network(data):
-    """Geräte-Tracker der Integrationen UniFi und AVM Fritz!Box (IP, MAC, VLAN …)."""
+    """Netzwerkgeräte aus den Geräte-Trackern von UniFi und AVM Fritz!Box (IP, MAC, VLAN …)
+    und aus DHCP-Zuteilungen (Sensor mit Attribut «leases», z. B. HA-IPFire)."""
     NET_PLATFORMS = {"unifi": "UniFi", "fritz": "Fritz!Box"}
     plat_of = {e["entity_id"]: e.get("platform") for e in data["entities"]}
     net = []
@@ -747,8 +758,36 @@ def collect_network(data):
         name = a.get("name") or a.get("host_name") or fn or "(unbenannt)"
         net.append({"name": name, "ip": a["ip"], "mac": (a.get("mac") or "").lower(), "oui": a.get("oui") or "", "vlan": a.get("vlan"),
                     "essid": a.get("essid"), "ap_mac": (a.get("ap_mac") or "").lower(), "online": s["state"] == "home", "platform": plat,
-                    "infra": plat == "unifi" and "is_guest" not in a and "vlan" not in a})
-    return net
+                    "infra": plat == "unifi" and "is_guest" not in a and "vlan" not in a, "expired": False})
+    # DHCP-Zuteilungen (z. B. HA-IPFire: sensor.…_aktive_dhcp_leases mit Attribut «leases»)
+    seen = {x["mac"] for x in net if x["mac"]}
+    leases = {}
+    for s in data["states"]:
+        lst = (s.get("attributes") or {}).get("leases")
+        if not s["entity_id"].startswith("sensor.") or not isinstance(lst, list):
+            continue
+        plat = plat_of.get(s["entity_id"]) or "dhcp"
+        for l in lst:
+            if not isinstance(l, dict) or not l.get("ip_address"):
+                continue
+            mac = str(l.get("mac_address") or "").lower()
+            if mac and mac in seen:
+                continue  # schon über UniFi oder Fritz!Box bekannt
+            expired = bool(l.get("expired")) or str(l.get("status") or "").lower() == "expired"
+            key = mac or l["ip_address"]
+            old = leases.get(key)
+            if old and (not old["expired"] or expired):
+                continue  # aktive Zuteilung hat Vorrang vor abgelaufener
+            leases[key] = {"name": (l.get("hostname") or "").strip() or "(unbenannt)", "ip": str(l["ip_address"]), "mac": mac, "oui": "",
+                           "vlan": None, "essid": None, "ap_mac": "", "online": not expired, "platform": plat, "infra": False,
+                           "expired": expired}
+    return net + list(leases.values())
+
+
+def net_source(x):
+    """Anzeigename der Quelle eines Netzwerkeintrags."""
+    p = x.get("platform") or ""
+    return {"unifi": "UniFi", "fritz": "Fritz!Box"}.get(p) or ("IPFire" if "ipfire" in p else ("DHCP" if p == "dhcp" else p))
 
 
 def build_pdf(data, out_path, title="Home Assistant Dokumentation", sections=None, options=None):
@@ -1102,18 +1141,20 @@ def build_pdf(data, out_path, title="Home Assistant Dokumentation", sections=Non
     # Netzwerk
     story = main if on("netzwerk") else []
     story.append(Paragraph("Netzwerk", H1))
-    story.append(P("Quelle: Geräte-Tracker der Integrationen UniFi Network und AVM FRITZ!Box Tools. Dieser Abschnitt funktioniert nur mit "
-                   "einem Fritz!Box- oder UniFi-Gateway; andere Router werden nicht ausgewertet.", SMALL))
+    story.append(P("Quelle: Geräte-Tracker der Integrationen UniFi Network und AVM FRITZ!Box Tools sowie DHCP-Zuteilungen der Integration "
+                   "HA-IPFire. Andere Router werden nicht ausgewertet. Bei IPFire fehlen VLAN, Hersteller und WLAN-Angaben.", SMALL))
     story.append(Spacer(1, 3 * mm))
     if not net:
         story.append(P("Keine Netzwerkdaten gefunden. Richte die Integration «UniFi Network» oder «AVM FRITZ!Box Tools» ein und aktiviere das "
-                       "Verfolgen von Netzwerk-Clients."))
+                       "Verfolgen von Netzwerk-Clients, oder nutze die Integration HA-IPFire."))
     else:
         infra = sorted([x for x in net if x["infra"]], key=ip_key)
         clients = [x for x in net if not x["infra"]]
         online = sum(1 for x in net if x["online"])
+        n_exp = sum(1 for x in net if x.get("expired"))
         story.append(table([["Kennzahl", "Anzahl"], ["Netzwerkgeräte (UniFi)", len(infra)], ["Clients", len(clients)],
-                            ["Online", online], ["Offline", len(net) - online]], [60 * mm, 30 * mm]))
+                            ["Online", online], ["Offline", len(net) - online - n_exp]] +
+                           ([["Abgelaufene DHCP-Zuteilungen", n_exp]] if n_exp else []), [60 * mm, 30 * mm]))
         story.append(Spacer(1, 3 * mm))
         cols = [48 * mm, 28 * mm, 33 * mm, 32 * mm, W - 141 * mm]
         nk = lambda x: NOTE("net", x["mac"] or x["ip"])
@@ -1133,8 +1174,9 @@ def build_pdf(data, out_path, title="Home Assistant Dokumentation", sections=Non
                 if x["essid"]:
                     conn = "WLAN " + x["essid"] + (f" ({name_by_mac[x['ap_mac']]})" if x["ap_mac"] in name_by_mac else "")
                 else:
-                    conn = "LAN" if x["platform"] == "unifi" else ""
-                rows.append([x["name"] + ("" if x["online"] else " (offline)"), x["ip"], x["mac"], x["oui"], conn] + ([nk(x)] if has_nn else []))
+                    conn = "LAN" if x["platform"] == "unifi" else ("DHCP (" + net_source(x) + ")" if x["platform"] not in ("unifi", "fritz") else "")
+                suffix = "" if x["online"] else (" (abgelaufen)" if x.get("expired") else " (offline)")
+                rows.append([x["name"] + suffix, x["ip"], x["mac"], x["oui"], conn] + ([nk(x)] if has_nn else []))
             story.append(table(rows, [38 * mm, 24 * mm, 30 * mm, 26 * mm, 26 * mm, W - 144 * mm] if has_nn else cols))
     story.append(PageBreak())
 

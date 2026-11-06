@@ -13,6 +13,7 @@ Die PDFs liegen in der Freigabe `share`, Ordner `ha_doc_beta`.
 - **Vorlagen:** «Kurzbericht» (Übersicht und Auffälligkeiten) und «Vollständig» setzen die Haken mit einem Klick. «Wofür ist welcher Abschnitt?» erklärt die Abschnitte.
 - **Im PDF:** klickbares Inhaltsverzeichnis, Lesezeichen in der Seitenleiste und eine Kopfzeile mit Name des Zuhauses und Kapitel.
 - **Integrationen:** nach Integration gruppiert, mit Status und Quelle auf Deutsch.
+- **Netzwerk:** Geräte aus UniFi und Fritz!Box (Geräte-Tracker) sowie aus den DHCP-Zuteilungen von IPFire (Integration HA-IPFire).
 - **Dateien löschen:** einzeln mit «Löschen» oder mehrere auf einmal: Kästchen anhaken (oder «Alle auswählen») und «Ausgewählte löschen».
 - **Konfigurations-/Diagnose-Entitäten ausblenden:** kürzere Geräteliste.
 - **Nur Einträge mit fehlenden Entitäten:** zeigt Automatisierungen, Skripte und Szenen, die auf nicht mehr vorhandene Entitäten verweisen.
