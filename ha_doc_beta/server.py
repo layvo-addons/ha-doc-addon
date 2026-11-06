@@ -319,7 +319,7 @@ button{{background:var(--accent);color:#fff;border:0;padding:12px 22px;border-ra
 button[disabled]{{opacity:.5;cursor:wait}} button.del{{background:transparent;color:var(--link);border:1px solid var(--line);padding:4px 10px;font-size:13px}} a.btn{{display:inline-block;padding:12px 22px;border-radius:8px;font-size:16px;text-decoration:none;margin-left:8px}} a.btn.sec{{border:1px solid var(--link);color:var(--link)}} label.fld{{display:block;margin:6px 0;font-size:13px;color:var(--muted)}} label.fld input,label.fld textarea{{display:block;width:100%;box-sizing:border-box;margin-top:2px;padding:6px 8px;border:1px solid var(--line);border-radius:6px;background:var(--card);color:var(--fg);font:inherit}} button.sec{{background:transparent;color:var(--link);border:1px solid var(--link);margin-left:8px}} table{{border-collapse:collapse;width:100%;margin-top:18px;background:var(--card)}}
 td,th{{border:1px solid var(--line);padding:8px 10px;text-align:left}} .msg{{margin:14px 0;color:var(--muted)}}
 p.btns{{display:flex;flex-wrap:wrap;gap:8px}} p.btns .btn,p.btns button.sec{{margin-left:0}}
-.files{{overflow-x:auto}} .files td a{{word-break:break-all}}
+.files{{overflow-x:auto}} a.dl{{font-size:12px;color:var(--muted);margin-left:6px}} .files td a{{word-break:break-all}}
 .tgl{{margin:4px 0}} details.help{{margin:4px 0 8px;font-size:13px;color:var(--muted)}} details.help ul{{margin:6px 0 0 18px;padding:0}} td.cb,th.cb{{width:28px;text-align:center}} .tgl button.del{{margin-left:6px}} button.mini{{background:transparent;color:var(--link);border:1px solid var(--line);padding:4px 10px;font-size:13px;margin-right:6px}}
 .opts{{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:6px;margin:8px 0}}
 .opt{{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:8px 10px;cursor:pointer;display:flex;align-items:flex-start;gap:8px}}
@@ -375,9 +375,16 @@ def schedule_page(msg="", ok=True):
 def page():
     files = sorted((f for f in os.listdir(OUT_DIR) if is_doc_file(f)),
                    key=lambda f: os.path.getmtime(os.path.join(OUT_DIR, f)), reverse=True)
+    def file_link(f):
+        e = html.escape(f)
+        if f.endswith(".xlsx"):  # im selben Fenster herunterladen (neues Fenster verliert in der App die Anmeldung)
+            return f'<a href="files/{e}" download="{e}">{e}</a>'
+        return (f'<a href="files/{e}" target="_blank">{e}</a>'
+                f' <a class="dl" href="files/{e}?dl=1" download="{e}" title="PDF herunterladen statt anzeigen">herunterladen</a>')
+
     rows = "".join(
         f'<tr><td class="cb"><input type="checkbox" name="file" value="{html.escape(f)}" aria-label="{html.escape(f)} auswählen"></td>'
-        f'<td><a href="files/{html.escape(f)}" target="_blank">{html.escape(f)}</a></td>'
+        f'<td>{file_link(f)}</td>'
         f'<td>{os.path.getsize(os.path.join(OUT_DIR, f)) // 1024} KB</td>'
         f'<td><button class="del" name="one" value="{html.escape(f)}" title="Löschen" '
         f'onclick="return confirm(\'Datei wirklich löschen?\')">Löschen</button></td></tr>' for f in files
@@ -466,7 +473,7 @@ class Handler(BaseHTTPRequestHandler):
                 xl = name.endswith(".xlsx")
                 with open(full, "rb") as f:
                     return self._send(200, f.read(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" if xl else "application/pdf",
-                                      {"Content-Disposition": f'{"attachment" if xl else "inline"}; filename="{name}"'})
+                                      {"Content-Disposition": f'{"attachment" if xl or "dl=1" in self.path else "inline"}; filename="{name}"'})
             return self.send_error(404)
         self._send(200, page())
 

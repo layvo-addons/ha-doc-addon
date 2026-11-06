@@ -1,5 +1,9 @@
 # Änderungen
 
+## 0.7.9 (Beta)
+- Fehlerbehebung: «PDF erstellen» brach mit «LayoutError … too large on page» ab, wenn eine Automatisierung sehr viele Auslöser-Entitäten oder sehr lange Angaben hat; das Schema passte nicht mehr auf eine Seite. Zeilen im Schema werden jetzt gekürzt, und ein zu hohes Schema wird durch einen Hinweis ersetzt (die Textdarstellung zeigt weiterhin alles).
+- Fehlerbehebung: Excel-Dateien werden im selben Fenster heruntergeladen statt in einem neuen. In der Home-Assistant-App führte das neue Fenster zu «401: Unauthorized». PDFs haben neben dem Link zusätzlich «herunterladen».
+
 ## 0.7.8 (Beta)
 - Netzwerk mit IPFire: Der Hersteller der Netzwerkkarte (`mac_vendor`, ab HA-IPFire v0.3.7) erscheint in der Spalte «Hersteller». Liefert die Integration ein Feld `vlan`, werden die Geräte wie bei UniFi nach VLAN gruppiert. Ältere Versionen von HA-IPFire funktionieren weiterhin, die Spalten bleiben dann leer.
 
