@@ -1,5 +1,8 @@
 # Änderungen
 
+## 0.7.4 (Beta)
+- Fehlerbehebung: «PDF erstellen», «Excel erstellen» und «Bemerkungen erfassen» brachen mit «TypeError: '<' not supported between instances of 'NoneType' and 'int'» ab, wenn ein Stockwerk in Home Assistant keine Ebene hat. Solche Stockwerke stehen jetzt nach denen mit Ebene.
+
 ## 0.7.3 (Beta)
 - Darstellung: Umbrochener Text bei Abschnitten, Optionen, Bereichen, Deckblatt und Logo beginnt bündig unter der ersten Zeile statt unter dem Kästchen. Knöpfe ohne Einrückung nach einem Zeilenumbruch, die Dateiliste passt auf schmale Bildschirme, die Eingabefelder bei «Einstellungen Monatsbericht» stehen auf gleicher Höhe.
 - Neu: **mehrere Dateien auf einmal löschen.** In der Dateiliste hat jede Datei ein Kästchen; mit «Alle auswählen», «Keine auswählen» und «Ausgewählte löschen» (mit Rückfrage und Anzahl). Der Knopf «Löschen» pro Zeile löscht weiterhin nur diese eine Datei.
