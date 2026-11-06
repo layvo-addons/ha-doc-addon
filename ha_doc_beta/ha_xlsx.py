@@ -50,30 +50,23 @@ def build_xlsx(data, out_path, options=None):
     wb = Workbook()
     ws = wb.active
     ws.title = "Geräte"
-    _header(ws, ["Bereich / Gerät / Entität", "Hersteller / Modell", "IP", "Entität-ID", "Zustand", "Entitäten", "Labels",
-                 "Eigener Bereich", "Bemerkung"],
-            [46, 34, 16, 52, 18, 10, 30, 22, 60])
-    area_name = {a["area_id"]: a["name"] for a in data["areas"]}
-    ent_reg = {e["entity_id"]: e for e in data["entities"]}
+    _header(ws, ["Bereich / Gerät / Entität", "Hersteller / Modell", "IP", "Entität-ID", "Zustand", "Entitäten", "Bemerkung"],
+            [46, 34, 16, 52, 18, 10, 60])
     ws.sheet_properties.outlinePr.summaryBelow = False  # +/- Knopf steht in der Gerätezeile
     areas = sorted(data["areas"], key=lambda a: ha_doc.area_sort_key(floors, a))
     areas.append({"area_id": None, "name": "Ohne Bereich", "floor_id": None})
 
-    def add_device(title, sub, ip, ents, note="", labels=(), dev_area=None):
+    def add_device(title, sub, ip, ents, note=""):
         ents = shown(ents)
-        ws.append([title, sub, ip, "", "", len(ents), ", ".join(labels), "", note])
+        ws.append([title, sub, ip, "", "", len(ents), note])
         r = ws.max_row
-        for c in range(1, 10):
+        for c in range(1, 8):
             ws.cell(row=r, column=c).fill = DEV_FILL
         ws.cell(row=r, column=1).font = Font(bold=True)
         ws.cell(row=r, column=1).alignment = Alignment(indent=1)
         for e in ents:
             nm = n.names.get(e, "")
-            reg = ent_reg.get(e, {})
-            own = reg.get("area_id")
-            own_txt = area_name.get(own, own) if own and dev_area and own != dev_area else ""
-            ws.append([nm if nm != e else "", "", "", e, state_of.get(e, ""), "", ", ".join(ha_doc.label_names(data, reg.get("labels"))),
-                       own_txt, NOTE("entity", e)])
+            ws.append([nm if nm != e else "", "", "", e, state_of.get(e, ""), "", NOTE("entity", e)])
             rr = ws.max_row
             ws.cell(row=rr, column=1).alignment = Alignment(indent=3)
             ws.row_dimensions[rr].outlineLevel = 1
@@ -87,17 +80,16 @@ def build_xlsx(data, out_path, options=None):
         if not devs and not loose:
             continue
         fl = floors.get(a.get("floor_id"), {}).get("name")
-        ws.append([a["name"] + (f"  ({fl})" if fl else ""), "", "", "", "", "", "", "", NOTE("area", a["area_id"] or "_none")])
+        ws.append([a["name"] + (f"  ({fl})" if fl else ""), "", "", "", "", "", NOTE("area", a["area_id"] or "_none")])
         r = ws.max_row
-        for c in range(1, 10):
+        for c in range(1, 8):
             ws.cell(row=r, column=c).fill = AREA_FILL
         ws.cell(row=r, column=1).font = Font(bold=True, size=12)
         for d in sorted(devs, key=lambda x: (x.get("name_by_user") or x.get("name") or "").lower()):
             ip = next((ip_by_mac[str(c[1]).lower()] for c in d.get("connections") or []
                        if len(c) == 2 and c[0] == "mac" and str(c[1]).lower() in ip_by_mac), "")
             add_device(d.get("name_by_user") or d.get("name") or "?",
-                       f"{d.get('manufacturer') or ''} {d.get('model') or ''}".strip(), ip, ents_by_dev.get(d["id"], []), NOTE("device", d["id"]),
-                       ha_doc.label_names(data, d.get("labels")), d.get("area_id"))
+                       f"{d.get('manufacturer') or ''} {d.get('model') or ''}".strip(), ip, ents_by_dev.get(d["id"], []), NOTE("device", d["id"]))
         if loose:
             add_device("Entitäten ohne Gerät", "", "", loose)
     ws.sheet_format.outlineLevelRow = 1

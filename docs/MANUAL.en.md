@@ -176,6 +176,8 @@ Notes on automations, scripts and scenes appear in the PDF but not in the Excel 
 | Network section empty | The UniFi or Fritz!Box integration is missing, or client tracking is off (chapter 7). |
 | An automation appears with a note and no content | YAML automations **without an `id`** can't be read through the API. Add an `id:` in the YAML and they become readable. |
 | Error message when creating the PDF | Copy the text shown under the button and report it as an issue (without personal data). |
+| Where do I find the PDFs I created? | The easiest way is at the bottom of the layvo Doku interface: click a file name to open the PDF. They are stored in the `share` folder under **`ha_doc`** (for the beta version **`ha_doc_beta`**). From a PC you reach the folder with the "Samba share" app at `\\homeassistant\share\ha_doc`; inside Home Assistant with a file app such as "Studio Code Server" at `/share/ha_doc`. |
+| Script or automation with the note "Konfiguration nicht über die API lesbar" | It is defined in YAML and Home Assistant does not hand out its configuration. The PDF then shows only name, status and mode. |
 | A file won't open | Reload the page. The add-on can only be reached through the Home Assistant sidebar (ingress). |
 
 # 11. Privacy
