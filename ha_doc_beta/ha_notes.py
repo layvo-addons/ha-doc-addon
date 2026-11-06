@@ -125,7 +125,7 @@ def page(data, notes, diag=False, saved=False):
     out.append(f'<details class="grp" data-s="allgemein"><summary><b>Allgemeine Bemerkung</b> <span class="sub">erscheint auf dem Deckblatt des PDFs</span>{_mark(notes["general"])}</summary>'
                f'<div class="body">{ta("n:general", notes["general"], "z. B. Standort, Verantwortlicher, Stand der Dokumentation")}</div></details>')
     # Bereiche und Geräte
-    areas = sorted(data["areas"], key=lambda a: (floors.get(a.get("floor_id"), {}).get("level", 99), a["name"]))
+    areas = sorted(data["areas"], key=lambda a: ha_doc.area_sort_key(floors, a))
     areas = areas + [{"area_id": None, "name": "Ohne Bereich", "floor_id": None}]
     inner = []
     for a in areas:
