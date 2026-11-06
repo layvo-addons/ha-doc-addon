@@ -234,6 +234,34 @@ def toggle_bar(name, extra=""):
             f'<button type="button" class="mini" onclick="{js.format(n=name, v="false")}">Keine auswählen</button>{extra}</div>')
 
 
+SECTION_HELP = [
+    ("Übersicht", "Kennzahlen auf einen Blick (eine Seite)."),
+    ("Bereiche und Geräte", "Was steht wo, mit allen Entitäten. Meist der längste Teil; mit «Diagnose-Entitäten ausblenden» deutlich kürzer."),
+    ("Integrationen", "Welche Integrationen eingerichtet sind und ob sie laufen."),
+    ("Netzwerk", "IP- und MAC-Adressen der Geräte (nur mit UniFi oder Fritz!Box)."),
+    ("Automatisierungen (Text / Schema)", "Was jede Automatisierung tut. Das Schema ist anschaulich, braucht aber viele Seiten."),
+    ("Skripte, Szenen, Helfer", "Zum Nachschlagen."),
+    ("Auffälligkeiten", "Zum Aufräumen: nicht verfügbare Entitäten und Verweise auf gelöschte Entitäten."),
+    ("Änderungen seit letztem Stand", "Was seit der letzten Momentaufnahme neu, entfernt oder geändert ist."),
+]
+PRESET_SHORT = ["uebersicht", "auffaelligkeiten"]
+
+
+def section_tools():
+    """Vorlagen und Knöpfe über den Abschnitten, dazu eine aufklappbare Erklärung."""
+    full = [k for k, _ in ha_doc.SECTIONS if k != "aenderungen"]
+    js = ("var f=this.form,s={secs};f.querySelectorAll('input[name=sections]').forEach(function(c){{c.checked=s.indexOf(c.value)>=0;}});"
+          "var h=f.querySelector('input[name=hide_diag]');if(h)h.checked={hide};"
+          "var o=f.querySelector('input[name=only_problems]');if(o)o.checked=false;")
+    pre = (f'<button type="button" class="mini" title="Übersicht und Auffälligkeiten, Diagnose-Entitäten ausgeblendet" '
+           f'onclick="{html.escape(js.format(secs=json.dumps(PRESET_SHORT), hide="true"))}">Vorlage: Kurzbericht</button>'
+           f'<button type="button" class="mini" title="Alle Abschnitte ausser dem Änderungsvergleich" '
+           f'onclick="{html.escape(js.format(secs=json.dumps(full), hide="false"))}">Vorlage: Vollständig</button>')
+    helptxt = "".join(f"<li><b>{html.escape(t)}:</b> {html.escape(d)}</li>" for t, d in SECTION_HELP)
+    return (toggle_bar("sections", pre) +
+            f'<details class="help"><summary>Wofür ist welcher Abschnitt?</summary><ul>{helptxt}</ul></details>')
+
+
 def checkbox(name, value, label, checked):
     return f'<label class="opt"><input type="checkbox" name="{name}" value="{html.escape(value)}"{" checked" if checked else ""}><span>{html.escape(label)}</span></label>'
 
@@ -292,7 +320,7 @@ button[disabled]{{opacity:.5;cursor:wait}} button.del{{background:transparent;co
 td,th{{border:1px solid var(--line);padding:8px 10px;text-align:left}} .msg{{margin:14px 0;color:var(--muted)}}
 p.btns{{display:flex;flex-wrap:wrap;gap:8px}} p.btns .btn,p.btns button.sec{{margin-left:0}}
 .files{{overflow-x:auto}} .files td a{{word-break:break-all}}
-.tgl{{margin:4px 0}} td.cb,th.cb{{width:28px;text-align:center}} .tgl button.del{{margin-left:6px}} button.mini{{background:transparent;color:var(--link);border:1px solid var(--line);padding:4px 10px;font-size:13px;margin-right:6px}}
+.tgl{{margin:4px 0}} details.help{{margin:4px 0 8px;font-size:13px;color:var(--muted)}} details.help ul{{margin:6px 0 0 18px;padding:0}} td.cb,th.cb{{width:28px;text-align:center}} .tgl button.del{{margin-left:6px}} button.mini{{background:transparent;color:var(--link);border:1px solid var(--line);padding:4px 10px;font-size:13px;margin-right:6px}}
 .opts{{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:6px;margin:8px 0}}
 .opt{{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:8px 10px;cursor:pointer;display:flex;align-items:flex-start;gap:8px}}
 .opt input{{flex:none;margin:3px 0 0}} .opt span{{flex:1;min-width:0}}
@@ -336,7 +364,7 @@ def schedule_page(msg="", ok=True):
 <label class="fld">Anzahl aufbewahrter PDFs (1 bis 100)<input type="number" name="keep_last" min="1" max="100" value="{c['keep_last']}" required></label>
 </div>
 <p class="msg">Die Anzahl gilt nur für automatisch erstellte Berichte (<code>ha_monatsbericht_…</code>). Manuell erstellte Dateien löschst du auf der Hauptseite.</p>
-<h2>Abschnitte</h2>{toggle_bar("sections")}<div class="opts">{secs}</div>
+<h2>Abschnitte</h2>{section_tools()}<div class="opts">{secs}</div>
 <h2>Optionen</h2><div class="opts" style="grid-template-columns:1fr">{flt}</div>
 {area_html}
 <p class="btns"><button>Speichern</button><a class="btn sec" href="./">Abbrechen</a></p></form>
@@ -378,7 +406,7 @@ def page():
 <h1>Home Assistant Dokumentation</h1>
 <p>Erstellt ein PDF deiner Installation. Wähle, was enthalten sein soll.</p>
 <form method="post" action="generate" onsubmit="if(!document.querySelector('input[name=sections]:checked')){{alert('Bitte mindestens einen Abschnitt auswählen.');return false;}}">
-<h2>Abschnitte</h2>{toggle_bar("sections")}<div class="opts">{boxes}</div>
+<h2>Abschnitte</h2>{section_tools()}<div class="opts">{boxes}</div>
 <h2>Optionen</h2><div class="opts" style="grid-template-columns:1fr">{extra}</div>
 {area_html}
 <p class="btns"><button name="action" value="generate" {btn}>PDF erstellen</button>

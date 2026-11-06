@@ -1,5 +1,11 @@
 # Änderungen
 
+## 0.7.6 (Beta)
+- **Klickbares Inhaltsverzeichnis:** Ein Klick auf eine Überschrift im Inhaltsverzeichnis springt zur Seite. Dazu gibt es Lesezeichen in der Seitenleiste des PDF-Programms (Kapitel und Unterkapitel).
+- **Kopfzeile:** Ab Seite 2 steht oben der Name des Zuhauses und das aktuelle Kapitel, zum Beispiel «Zuhause · Bereiche und Geräte».
+- **Vorlagen für die Auswahl:** «Vorlage: Kurzbericht» (Übersicht und Auffälligkeiten, Diagnose-Entitäten ausgeblendet) und «Vorlage: Vollständig» (alle Abschnitte ausser dem Änderungsvergleich), auf der Hauptseite und bei «Einstellungen Monatsbericht».
+- **«Wofür ist welcher Abschnitt?»:** aufklappbare Erklärung über den Abschnitten.
+
 ## 0.7.5 (Beta)
 - Fehlerbehebung: «PDF erstellen» brach mit «AttributeError: 'NoneType' object has no attribute 'get'» ab, wenn ein Skript oder eine Automatisierung in YAML definiert ist und Home Assistant die Konfiguration nicht herausgibt. Solche Einträge erscheinen jetzt mit Modus und dem Hinweis «Konfiguration nicht über die API lesbar».
 
