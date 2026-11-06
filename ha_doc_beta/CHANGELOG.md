@@ -1,5 +1,10 @@
 # Änderungen
 
+## 0.7.5 (Beta)
+- Neu: **Labels** (zum Beispiel «Batteriegerät») erscheinen in der Dokumentation: in der Übersicht als eigene Tabelle (Label, Anzahl Geräte und Entitäten), im PDF beim Gerät und bei jeder Entität, in Excel in der Spalte «Labels».
+- Neu: **eigener Bereich von Entitäten.** Ist eine Entität einem anderen Bereich zugeordnet als ihr Gerät, steht das im PDF bei der Entität («Bereich: … (abweichend vom Gerät)»), und die Entität erscheint zusätzlich in ihrem Bereich unter «Entitäten von Geräten in anderen Bereichen». In Excel in der Spalte «Eigener Bereich».
+- Änderungsvergleich: erkennt jetzt auch geänderte Labels (Geräte und Entitäten) und geänderte Bereiche von Entitäten. Beim ersten Vergleich nach dem Update werden diese neuen Angaben nicht als Änderung gemeldet.
+
 ## 0.7.4 (Beta)
 - Fehlerbehebung: «PDF erstellen», «Excel erstellen» und «Bemerkungen erfassen» brachen mit «TypeError: '<' not supported between instances of 'NoneType' and 'int'» ab, wenn ein Stockwerk in Home Assistant keine Ebene hat. Solche Stockwerke stehen jetzt nach denen mit Ebene.
 

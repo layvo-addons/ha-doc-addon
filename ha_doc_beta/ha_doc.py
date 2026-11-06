@@ -67,6 +67,7 @@ def fetch_all(url, token, supervisor=False, light=False):
         "devices": c.ws_call("config/device_registry/list") or [],
         "areas": c.ws_call("config/area_registry/list") or [],
         "floors": c.ws_call("config/floor_registry/list") or [],
+        "labels": c.ws_call("config/label_registry/list") or [],
         "entries": c.ws_call("config_entries/get") or [],
         "manifests": {m.get("domain"): m.get("name") for m in (c.ws_call("manifest/list") or []) if isinstance(m, dict)},
         "automations": [],
@@ -125,6 +126,8 @@ def demo_data():
         "states": states,
         "floors": [{"floor_id": "eg", "name": "Erdgeschoss", "level": 0}, {"floor_id": "og", "name": "Obergeschoss", "level": 1},
                    {"floor_id": "keller", "name": "Keller", "level": None}],
+        "labels": [{"label_id": "batterie", "name": "Batteriegerät"}, {"label_id": "aussen", "name": "Aussen"},
+                   {"label_id": "kontrolle", "name": "Jährlich prüfen"}],
         "areas": [{"area_id": "wohnzimmer", "name": "Wohnzimmer", "floor_id": "eg"},
                   {"area_id": "kueche", "name": "Küche", "floor_id": "eg"},
                   {"area_id": "flur", "name": "Flur", "floor_id": "og"},
@@ -132,15 +135,16 @@ def demo_data():
         "devices": [
             {"id": "d1", "name": "IKEA Deckenleuchte", "name_by_user": None, "manufacturer": "IKEA", "model": "TRADFRI Driver", "area_id": "wohnzimmer", "sw_version": "2.3.086"},
             {"id": "d2", "name": "Somfy Storen", "name_by_user": "Storen Wohnzimmer", "manufacturer": "Somfy", "model": "Sonesse 30", "area_id": "wohnzimmer", "sw_version": "1.0"},
-            {"id": "d3", "name": "Aqara Bewegung", "name_by_user": None, "manufacturer": "Aqara", "model": "RTCGQ11LM", "area_id": "flur", "sw_version": "3"},
+            {"id": "d3", "name": "Aqara Bewegung", "name_by_user": None, "manufacturer": "Aqara", "model": "RTCGQ11LM", "area_id": "flur", "sw_version": "3", "labels": ["batterie"]},
             {"id": "d5", "name": "Steckdose Drucker", "name_by_user": None, "manufacturer": "ESPHome", "model": "esp32", "area_id": "flur", "sw_version": "2026.9",
              "connections": [["mac", "02:00:00:00:00:03"]]},
             {"id": "d4", "name": "Hue Spots", "name_by_user": None, "manufacturer": "Signify", "model": "LCG002", "area_id": "kueche", "sw_version": "1.88"},
         ],
         "entities": [
             {"entity_id": "light.wohnzimmer_decke", "device_id": "d1", "area_id": None, "platform": "zha", "disabled_by": None},
-            {"entity_id": "cover.wohnzimmer_storen", "device_id": "d2", "area_id": None, "platform": "somfy_mylink", "disabled_by": None},
-            {"entity_id": "binary_sensor.bewegung_flur", "device_id": "d3", "area_id": None, "platform": "zha", "disabled_by": None},
+            {"entity_id": "cover.wohnzimmer_storen", "device_id": "d2", "area_id": None, "platform": "somfy_mylink", "disabled_by": None, "labels": ["aussen"]},
+            {"entity_id": "binary_sensor.bewegung_flur", "device_id": "d3", "area_id": "waschkueche", "platform": "zha", "disabled_by": None,
+             "labels": ["batterie", "kontrolle"]},
             {"entity_id": "light.kueche_spots", "device_id": "d4", "area_id": None, "platform": "hue", "disabled_by": None},
             {"entity_id": "sensor.alter_sensor", "device_id": None, "area_id": None, "platform": "mqtt", "disabled_by": None},
         ] + [{"entity_id": e, "device_id": None, "area_id": None, "platform": "unifi", "disabled_by": None} for e in (
@@ -229,6 +233,12 @@ ENTRY_SOURCE_DE = {"user": "von Hand", "system": "System", "onboarding": "Erstei
                    "integration_discovery": "durch andere Integration", "hassio": "durch App", "reauth": "von Hand",
                    "reconfigure": "von Hand", "ignore": "ignoriert"}
 DISCOVERY_SOURCES = ("zeroconf", "dhcp", "ssdp", "bluetooth", "usb", "homekit", "mqtt")
+
+
+def label_names(data, ids):
+    """Namen der Labels zu einer Liste von Label-IDs, alphabetisch; unbekannte IDs erscheinen als ID."""
+    by_id = {l.get("label_id"): l.get("name") or l.get("label_id") for l in data.get("labels") or []}
+    return sorted((by_id.get(i) or i for i in ids or []), key=str.lower)
 
 
 def area_sort_key(floors, a):
@@ -916,9 +926,20 @@ def build_pdf(data, out_path, title="Home Assistant Dokumentation", sections=Non
     story.append(table([["Kennzahl", "Anzahl"], ["Entitäten (aktiv)", len(data["states"])], ["Geräte", len(data["devices"])],
                         ["Bereiche", len(data["areas"])], ["Integrationen", len({e.get("domain") for e in data["entries"]})], ["Integrations-Einträge", len(data["entries"])],
                         ["Automatisierungen", len(data["automations"])], ["Skripte", len(data["scripts"])],
-                        ["Szenen", len(data["scenes"])], ["Nicht verfügbare Entitäten", len(unavailable)]],
+                        ["Szenen", len(data["scenes"])], ["Labels", len(data.get("labels") or [])],
+                        ["Nicht verfügbare Entitäten", len(unavailable)]],
                        [90 * mm, 30 * mm]))
     story.append(Spacer(1, 4 * mm))
+    if data.get("labels"):
+        story.append(Paragraph("Labels", H2))
+        lab_rows = []
+        for l in sorted(data["labels"], key=lambda x: (x.get("name") or "").lower()):
+            lid = l.get("label_id")
+            nd = sum(1 for d in data["devices"] if lid in (d.get("labels") or []))
+            ne = sum(1 for e in data["entities"] if lid in (e.get("labels") or []))
+            lab_rows.append([l.get("name") or lid, nd, ne])
+        story.append(table([["Label", "Geräte", "Entitäten"]] + lab_rows, [60 * mm, 25 * mm, 25 * mm]))
+        story.append(Spacer(1, 4 * mm))
     story.append(Paragraph("Entitäten nach Domain", H2))
     top = sorted(doms.items(), key=lambda x: -x[1])
     story.append(table([["Domain", "Anzahl"]] + [[d, c] for d, c in top], [60 * mm, 30 * mm]))
@@ -928,10 +949,21 @@ def build_pdf(data, out_path, title="Home Assistant Dokumentation", sections=Non
     dev_by_id = {d["id"]: d for d in data["devices"]}
     ents_by_dev = defaultdict(list)
     area_of_ent = {}
+    area_name = {a["area_id"]: a["name"] for a in data["areas"]}
+    ent_extra = {}  # Zusatzzeile pro Entität: eigener Bereich (abweichend vom Gerät) und Labels
     for e in data["entities"]:
         if e.get("device_id"):
             ents_by_dev[e["device_id"]].append(e["entity_id"])
         area_of_ent[e["entity_id"]] = e.get("area_id") or (dev_by_id.get(e.get("device_id"), {}).get("area_id"))
+        parts = []
+        dev_area = dev_by_id.get(e.get("device_id"), {}).get("area_id")
+        if e.get("device_id") and e.get("area_id") and e["area_id"] != dev_area:
+            parts.append("Bereich: " + area_name.get(e["area_id"], e["area_id"]) + " (abweichend vom Gerät)")
+        labs = label_names(data, e.get("labels"))
+        if labs:
+            parts.append("Labels: " + ", ".join(labs))
+        if parts:
+            ent_extra[e["entity_id"]] = "  ·  ".join(parts)
     floors = {f["floor_id"]: f for f in data["floors"]}
     story = main if on("bereiche") else []
     story.append(Paragraph("Bereiche und Geräte", H1))
@@ -964,8 +996,10 @@ def build_pdf(data, out_path, title="Home Assistant Dokumentation", sections=Non
         for e in ents:
             nm = n.names.get(e, "")
             en = NOTE("entity", e)
+            ex = ent_extra.get(e)
             rows.append([Paragraph(escape(nm if nm != e else ""), CELL),
-                         [Paragraph(escape(e), CELLM)] + ([Paragraph(note_html(en), CELL)] if en else [])])
+                         [Paragraph(escape(e), CELLM)] + ([Paragraph(escape(ex), SMALL)] if ex else [])
+                         + ([Paragraph(note_html(en), CELL)] if en else [])])
         if hidden:
             rows.append([Paragraph("", SMALL), Paragraph(f"+ {hidden} Konfigurations-/Diagnose-Entitäten ausgeblendet", SMALL)])
         elif not ents:
@@ -992,13 +1026,16 @@ def build_pdf(data, out_path, title="Home Assistant Dokumentation", sections=Non
             continue
         devs = [d for d in data["devices"] if d.get("area_id") == a["area_id"]]
         loose = [e for e, ar in area_of_ent.items() if ar == a["area_id"] and e not in ent_ids_with_device]
-        if not devs and not loose and a["area_id"] is None:
+        # Entitäten mit eigenem Bereich, deren Gerät in einem anderen Bereich steht
+        moved = sorted(e["entity_id"] for e in data["entities"] if a["area_id"] and e.get("device_id") and e.get("area_id") == a["area_id"]
+                       and dev_by_id.get(e["device_id"], {}).get("area_id") != a["area_id"])
+        if not devs and not loose and not moved and a["area_id"] is None:
             continue
         fl = floors.get(a.get("floor_id"), {}).get("name")
         story.append(Paragraph(escape(a["name"] + (f"  ({fl})" if fl else "")), H2))
         if NOTE("area", a["area_id"] or "_none"):
             story += [note_box(NOTE("area", a["area_id"] or "_none")), Spacer(1, 1.5 * mm)]
-        if not devs and not loose:
+        if not devs and not loose and not moved:
             story += [P("(keine Geräte oder Entitäten in diesem Bereich)", SMALL), Spacer(1, 2.5 * mm)]
             continue
         for d in sorted(devs, key=lambda x: (x.get("name_by_user") or x.get("name") or "").lower()):
@@ -1006,6 +1043,9 @@ def build_pdf(data, out_path, title="Home Assistant Dokumentation", sections=Non
             ip = device_ip(d)
             if ip:
                 sub = (sub + "  ·  IP " + ip).strip()
+            dlabs = label_names(data, d.get("labels"))
+            if dlabs:
+                sub = (sub + "  ·  Labels: " + ", ".join(dlabs)).strip()
             shown, hid = split_diag(ents_by_dev.get(d["id"], []))
             story.append(device_table(d.get("name_by_user") or d.get("name") or "?", sub, shown, hid, note=NOTE("device", d["id"])))
             story.append(Spacer(1, 2.5 * mm))
@@ -1013,6 +1053,23 @@ def build_pdf(data, out_path, title="Home Assistant Dokumentation", sections=Non
             shown, hid = split_diag(sorted(loose))
             story.append(device_table("Entitäten ohne Gerät", "z. B. Helfer, Vorlagen, Automatisierungen", shown, hid))
             story.append(Spacer(1, 2.5 * mm))
+        if moved:
+            shown, hid = split_diag(moved)
+            saved = {}
+            for e in shown:  # in diesem Kasten das Gerät statt des Bereichs nennen
+                d = dev_by_id.get(next(x["device_id"] for x in data["entities"] if x["entity_id"] == e), {})
+                dn = d.get("name_by_user") or d.get("name") or "?"
+                labs = label_names(data, next(x.get("labels") for x in data["entities"] if x["entity_id"] == e))
+                saved[e] = ent_extra.get(e)
+                ent_extra[e] = f"Gerät: {dn} ({area_name.get(d.get('area_id'), 'ohne Bereich')})" + (
+                    "  ·  Labels: " + ", ".join(labs) if labs else "")
+            story.append(device_table("Entitäten von Geräten in anderen Bereichen", "dem Bereich direkt zugeordnet", shown, hid))
+            story.append(Spacer(1, 2.5 * mm))
+            for e, v in saved.items():
+                if v is None:
+                    ent_extra.pop(e, None)
+                else:
+                    ent_extra[e] = v
     story.append(PageBreak())
 
     # Integrationen

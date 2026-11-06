@@ -13,12 +13,15 @@ MAX_DIFF_LINES = 40
 
 def snapshot(data, notes=None):
     areas = {a["area_id"]: a["name"] for a in data["areas"]}
+    labels = lambda ids: ", ".join(ha_doc.label_names(data, ids))
     devices = {d["id"]: {"Name": d.get("name_by_user") or d.get("name") or "?", "Hersteller": d.get("manufacturer") or "",
-                         "Modell": d.get("model") or "", "Bereich": areas.get(d.get("area_id"), ""), "Firmware": d.get("sw_version") or ""}
+                         "Modell": d.get("model") or "", "Bereich": areas.get(d.get("area_id"), ""), "Firmware": d.get("sw_version") or "",
+                         "Labels": labels(d.get("labels"))}
                for d in data["devices"]}
     dev_name = {k: v["Name"] for k, v in devices.items()}
     entities = {e["entity_id"]: {"Integration": e.get("platform") or "", "Gerät": dev_name.get(e.get("device_id"), ""),
-                                 "Deaktiviert": e.get("disabled_by") or ""} for e in data["entities"]}
+                                 "Deaktiviert": e.get("disabled_by") or "", "Bereich": areas.get(e.get("area_id"), ""),
+                                 "Labels": labels(e.get("labels"))} for e in data["entities"]}
     entries = {(e.get("entry_id") or f"{e.get('domain')}|{e.get('title')}"): {"Name": e.get("title") or e.get("domain") or "?",
                                                                                "Integration": e.get("domain") or ""} for e in data["entries"]}
 
@@ -57,7 +60,7 @@ def compare(prev, cur):
         removed = sorted(_title(k, p[k]) for k in p.keys() - c.keys())
         changed = []
         for k in sorted(c.keys() & p.keys()):
-            fields = [(f, p[k].get(f, ""), c[k].get(f, "")) for f in c[k] if f != "config" and p[k].get(f, "") != c[k].get(f, "")]
+            fields = [(f, p[k].get(f, ""), c[k].get(f, "")) for f in c[k] if f != "config" and f in p[k] and p[k].get(f, "") != c[k].get(f, "")]
             diff = []
             if "config" in c[k] and p[k].get("config") != c[k].get("config"):
                 a, b = _pretty(p[k].get("config")), _pretty(c[k].get("config"))
