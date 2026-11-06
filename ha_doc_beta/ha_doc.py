@@ -179,9 +179,9 @@ def demo_data():
                         "actions": [{"if": [{"condition": "state", "entity_id": "cover.wohnzimmer_storen", "state": "open"}],
                                      "then": [{"action": "cover.set_cover_position", "target": {"entity_id": "cover.wohnzimmer_storen"}, "data": {"position": 20}}],
                                      "else": [{"stop": "Bereits geschlossen"}]}]}},
-            {"entity_id": "automation.s42_storen_buro", "state": "on",
-             "attrs": {"friendly_name": "S42_Storensteuerung Büro", "last_triggered": now, "mode": "parallel"},
-             "config": {"alias": "S42_Storensteuerung Büro", "use_blueprint": {"path": "s42/storensteuerung.yaml",
+            {"entity_id": "automation.storen_buro", "state": "on",
+             "attrs": {"friendly_name": "Storensteuerung Büro", "last_triggered": now, "mode": "parallel"},
+             "config": {"alias": "Storensteuerung Büro", "use_blueprint": {"path": "beispiel/storensteuerung.yaml",
                         "input": {"storen": "cover.wohnzimmer_storen", "temp_sensor": "sensor.temp_wohnzimmer", "schwelle": 27, "nachts": True,
                                   "erweitert": {"puffer": 10}, "fenster": "binary_sensor.fenster_buero"}}}},
             {"entity_id": "automation.nachts", "state": "off",
@@ -193,8 +193,8 @@ def demo_data():
                                                  "sequence": [{"action": "notify.mobile_app_anna", "data": {"message": "Gute Nacht!"}}]}],
                                      "default": []}]}},
         ],
-        "blueprints": {"automation": {"s42/storensteuerung.yaml": {"metadata": {
-            "name": "S42 Storensteuerung", "description": "Steuert Storen nach Sonne, Temperatur und Anwesenheit.",
+        "blueprints": {"automation": {"beispiel/storensteuerung.yaml": {"metadata": {
+            "name": "Storensteuerung", "description": "Steuert Storen nach Sonne, Temperatur und Anwesenheit.",
             "input": {"storen": {"name": "Storen", "selector": {}}, "temp_sensor": {"name": "Temperatursensor", "selector": {}},
                       "schwelle": {"name": "Hitze-Schwelle", "default": 25, "selector": {}},
                       "nachts": {"name": "Nachts schliessen", "default": True, "selector": {}},
