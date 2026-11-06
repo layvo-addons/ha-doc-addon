@@ -207,6 +207,7 @@ def demo_data():
                         "sequence": [{"action": "light.turn_off", "target": {"entity_id": "all"}},
                                      {"delay": {"minutes": 1}},
                                      {"action": "cover.close_cover", "target": {"area_id": "wohnzimmer"}}]}},
+            {"entity_id": "script.yaml_skript", "state": "off", "attrs": {"friendly_name": "YAML-Skript", "mode": "single"}, "config": None},
         ],
         "scenes": [
             {"entity_id": "scene.nacht", "state": "unknown", "attrs": {"friendly_name": "Nacht"},
@@ -1171,7 +1172,7 @@ def build_pdf(data, out_path, title="Home Assistant Dokumentation", sections=Non
             name = it["attrs"].get("friendly_name") or it["entity_id"]
             status = {"on": "aktiv", "off": "deaktiviert"}.get(it["state"], it["state"]) if kind == "automation" else ""
             blk = [Paragraph(escape(name), H3), P(it["entity_id"] + (f"  |  Status: {status}" if status else "") +
-                   (f"  |  Modus: {c.get('mode') or it['attrs'].get('mode')}" if kind != "scene" and (c or it['attrs'].get('mode')) else ""), SMALL)]
+                   (f"  |  Modus: {(c or {}).get('mode') or it['attrs'].get('mode')}" if kind != "scene" and ((c or {}).get('mode') or it['attrs'].get('mode')) else ""), SMALL)]
             if NOTE(kind, it["entity_id"]):
                 blk.append(note_box(NOTE(kind, it["entity_id"])))
             mr = missing_refs(it)

@@ -1,5 +1,9 @@
 # Änderungen
 
+## 0.7.5
+- Fehlerbehebung: «PDF erstellen» brach mit «AttributeError: 'NoneType' object has no attribute 'get'» ab, wenn ein Skript oder eine Automatisierung in YAML definiert ist und Home Assistant die Konfiguration nicht herausgibt. Solche Einträge erscheinen jetzt mit Modus und dem Hinweis «Konfiguration nicht über die API lesbar».
+- Handbuch: neue Einträge in der Fehlersuche, wo die erstellten PDFs liegen und was der Hinweis «Konfiguration nicht über die API lesbar» bedeutet.
+
 ## 0.7.4
 - Fehlerbehebung: «PDF erstellen», «Excel erstellen» und «Bemerkungen erfassen» brachen mit «TypeError: '<' not supported between instances of 'NoneType' and 'int'» ab, wenn ein Stockwerk in Home Assistant keine Ebene hat. Solche Stockwerke stehen jetzt nach denen mit Ebene.
 
