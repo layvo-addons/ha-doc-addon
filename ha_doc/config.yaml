@@ -1,8 +1,8 @@
 name: "layvo Doku"
-version: "0.7.6"
+version: "0.7.7"
 slug: ha_doc
-description: "Dokumentiert Home Assistant automatisch als PDF"
-url: "https://github.com/layvo-addons/ha-doc-addon"
+description: "Umgezogen nach git.layvo.ch: bitte von dort neu installieren (siehe Dokumentation)"
+url: "https://git.layvo.ch/layvo/ha-doc-addon"
 arch:
   - aarch64
   - amd64

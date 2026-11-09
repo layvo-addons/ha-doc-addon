@@ -1,5 +1,8 @@
 # Änderungen
 
+## 0.7.10 (Beta)
+- **Umgezogen:** layvo Doku wird nur noch über `https://git.layvo.ch/layvo/ha-doc-addon` verteilt. Diese Version aus GitHub ist die letzte; sie bekommt keine Updates mehr. Neue Adresse unter **Einstellungen › Apps › App-Store › ⋮ › Repositorys** hinzufügen, «layvo Doku» daraus installieren und diese Version danach deinstallieren. Bemerkungen, Deckblatt, Logo und Monatsbericht-Einstellungen im Ordner `ha_doc` bleiben erhalten. Sonst keine Änderungen.
+
 ## 0.7.9 (Beta)
 - Fehlerbehebung: «PDF erstellen» brach mit «LayoutError … too large on page» ab, wenn eine Automatisierung sehr viele Auslöser-Entitäten oder sehr lange Angaben hat; das Schema passte nicht mehr auf eine Seite. Zeilen im Schema werden jetzt gekürzt, und ein zu hohes Schema wird durch einen Hinweis ersetzt (die Textdarstellung zeigt weiterhin alles).
 - Fehlerbehebung: Excel-Dateien werden im selben Fenster heruntergeladen statt in einem neuen. In der Home-Assistant-App führte das neue Fenster zu «401: Unauthorized». PDFs haben neben dem Link zusätzlich «herunterladen».

@@ -1,5 +1,8 @@
 # Änderungen
 
+## 0.7.7
+- **Umgezogen:** layvo Doku wird nur noch über `https://git.layvo.ch/layvo/ha-doc-addon` verteilt. Diese Version aus GitHub ist die letzte; sie bekommt keine Updates mehr. Neue Adresse unter **Einstellungen › Apps › App-Store › ⋮ › Repositorys** hinzufügen, «layvo Doku» daraus installieren und diese Version danach deinstallieren. Bemerkungen, Deckblatt, Logo und Monatsbericht-Einstellungen im Ordner `ha_doc` bleiben erhalten. Sonst keine Änderungen.
+
 ## 0.7.6
 - **Klickbares Inhaltsverzeichnis:** Ein Klick auf eine Überschrift im Inhaltsverzeichnis springt zur Seite. Dazu gibt es Lesezeichen in der Seitenleiste des PDF-Programms (Kapitel und Unterkapitel).
 - **Kopfzeile:** Ab Seite 2 steht oben der Name des Zuhauses und das aktuelle Kapitel, zum Beispiel «Zuhause · Bereiche und Geräte».

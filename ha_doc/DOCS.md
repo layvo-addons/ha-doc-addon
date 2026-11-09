@@ -1,5 +1,7 @@
 # layvo Doku
 
+> **Umgezogen:** layvo Doku wird nur noch über `https://git.layvo.ch/layvo/ha-doc-addon` verteilt. Diese Installation aus GitHub bekommt keine Updates mehr. Füge die neue Adresse unter **Einstellungen › Apps › App-Store › ⋮ › Repositorys** hinzu, installiere «layvo Doku» daraus und deinstalliere danach diese Version. Deine Daten im Ordner `ha_doc` bleiben erhalten.
+
 Seitenleiste → **layvo Doku** → Abschnitte und Optionen wählen → **PDF erstellen**.
 Die PDFs liegen in der Freigabe `share`, Ordner `ha_doc`.
 

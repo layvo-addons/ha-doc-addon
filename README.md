@@ -1,71 +1,26 @@
-# layvo Doku – Home Assistant Add-on
+# layvo Doku ist umgezogen
 
-Erstellt per Knopfdruck (oder automatisch jeden Monat) ein **PDF** deiner Home-Assistant-Installation:
-Bereiche, Geräte und Entitäten, Integrationen, Netzwerk (UniFi/Fritz!Box), Automatisierungen, Skripte, Szenen, Helfer und Auffälligkeiten.
-Alles läuft lokal in deinem Home Assistant, es werden keine Daten nach aussen gesendet.
+**layvo Doku wird nur noch über https://git.layvo.ch/layvo/ha-doc-addon verteilt.** Dieses Repository auf GitHub bekommt keine Updates mehr und ist archiviert.
 
-*Creates a PDF documentation of your Home Assistant setup (areas, devices, automations, scripts, scenes, helpers and issues) – locally, on demand or monthly.*
+## So wechselst du (einmalig, etwa 2 Minuten)
 
-## Handbuch
+1. In Home Assistant **Einstellungen › Apps › App-Store › ⋮ › Repositorys** öffnen (in älteren Versionen: **Einstellungen › Add-ons › Add-on-Store › ⋮ › Repositories**) und diese Adresse hinzufügen:
+   `https://git.layvo.ch/layvo/ha-doc-addon`
+2. **layvo Doku** aus «layvo Add-ons (git.layvo.ch)» installieren, «Beim Systemstart starten» und «In Seitenleiste anzeigen» einschalten, starten.
+3. Die alte Version (aus GitHub) deinstallieren und die GitHub-Adresse `https://github.com/layvo-addons/ha-doc-addon` unter Repositorys entfernen.
 
-* Deutsch: [HANDBUCH.de.md](docs/HANDBUCH.de.md) ([PDF](docs/HANDBUCH.de.pdf))
-* English: [MANUAL.en.md](docs/MANUAL.en.md) ([PDF](docs/MANUAL.en.pdf))
+Bemerkungen, Deckblatt, Logo, Einstellungen des Monatsberichts und alle erstellten PDFs liegen im Ordner `ha_doc` der Freigabe `share` und **bleiben erhalten**. Lass den Monatsbericht nur in einer Installation eingeschaltet.
 
-## Funktionen
+Handbuch, Neuigkeiten und Support: https://git.layvo.ch/layvo/ha-doc-addon und https://www.layvo.ch/layvo-doku
 
-- **Auswahl vor dem Erstellen:** Abschnitte, einzelne Bereiche, Diagnose-Entitäten ausblenden, nur Einträge mit fehlenden Entitäten.
-- **Änderungsvergleich (optional):** was ist seit dem letzten Stand neu, entfernt oder geändert?
-- **Eigene Bemerkungen** zu Bereichen, Geräten, Entitäten, Automatisierungen u. a. (im PDF, in Excel und im Änderungsvergleich).
-- **Deckblatt-Angaben (optional):** Firma, Kunde, Version und Bearbeiter auf dem Deckblatt.
-- **Logo wählbar:** layvo-Logo, kein Logo oder ein eigenes Logo im PDF.
-- **Excel-Export** mit aufklappbaren Geräten (Entitäten eingeklappt), Netzwerk und Integrationen.
-- **Integrationen nach Integration gruppiert** (zum Beispiel «ESPHome (10)»), mit Status und Quelle auf Deutsch.
-- **Alle auswählen / Keine auswählen** bei Abschnitten und Bereichen, dazu die **Vorlagen «Kurzbericht» und «Vollständig»**.
-- **Leicht zu lesen:** klickbares Inhaltsverzeichnis, Lesezeichen und eine Kopfzeile mit Name des Zuhauses und Kapitel.
-- **Ein Kasten pro Gerät** mit Gerätename, Hersteller/Modell und allen Entitäten (mit Namen).
-- **Automatisierungen als Text und als Schema** (Auslöser → Bedingungen → Aktionen), gleichartige Auslöser zusammengefasst.
-- **Blueprints:** Name, Beschreibung und nur die vom Standard abweichenden Eingaben.
-- **Auffälligkeiten:** nicht verfügbare Entitäten und Verweise auf Entitäten, die es nicht mehr gibt (auch in Blueprint-Eingaben).
-- **Monatlicher Bericht** optional, mit Aufbewahrung der letzten N Berichte. Manuell erstellte Dateien lassen sich einzeln oder mehrere auf einmal löschen.
+---
 
-| Geräte | Automatisierung als Schema | Blueprint |
-|---|---|---|
-| ![Geräte](docs/geraete.png) | ![Schema](docs/automation.png) | ![Blueprint](docs/blueprint.png) |
+# layvo Doku has moved
 
-*(Beispielbilder mit Demodaten.)*
+**layvo Doku is now distributed only via https://git.layvo.ch/layvo/ha-doc-addon.** This GitHub repository no longer receives updates and is archived.
 
-## Installation
+1. In Home Assistant open **Settings › Apps › App Store › ⋮ › Repositories** (older versions: **Settings › Add-ons › Add-on Store › ⋮ › Repositories**) and add `https://git.layvo.ch/layvo/ha-doc-addon`.
+2. Install **layvo Doku** from "layvo Add-ons (git.layvo.ch)", enable "Start on boot" and "Show in sidebar", start it.
+3. Uninstall the old version (from GitHub) and remove the GitHub address under Repositories.
 
-1. In Home Assistant: **Einstellungen › Add-ons › Add-on-Store › ⋮ › Repositories** und diese Adresse hinzufügen:
-   `https://github.com/layvo-addons/ha-doc-addon`
-2. **layvo Doku** installieren und starten, «In Seitenleiste anzeigen» aktivieren.
-3. In der Seitenleiste **layvo Doku** öffnen, Abschnitte wählen und **PDF erstellen**.
-
-Die PDFs liegen in der Freigabe `share` im Ordner `ha_doc`.
-
-### Beta-Version
-
-Im selben Repository gibt es zusätzlich **layvo Doku (BETA)** (Kennzeichnung «Experimentell»). Dort erscheinen neue Versionen zuerst, bevor sie in «layvo Doku» übernommen werden. Beide lassen sich gleichzeitig installieren. Die Beta speichert alles im eigenen Ordner `ha_doc_beta` der Freigabe `share` und verändert die Daten der produktiven Version nicht.
-
-Voraussetzung: Home Assistant OS oder Supervised (Add-ons), Architektur amd64 oder aarch64.
-
-## Monatlicher Bericht
-
-Unter **«Einstellungen Monatsbericht»** in der Oberfläche den Monatsbericht einschalten, Tag und Uhrzeit wählen sowie Abschnitte, Bereiche und Filter festlegen. Änderungen gelten sofort, die Konfiguration des Add-ons enthält keine Optionen mehr.
-Damit der Bericht wirklich erstellt wird, muss das Add-on laufen: **«Beim Systemstart starten»** einschalten.
-
-## Datenschutz
-
-Das Add-on liest die Konfiguration deines Home Assistant über die interne Schnittstelle (Supervisor) und schreibt PDFs in `share/ha_doc`.
-Es sendet nichts ins Internet. Das PDF enthält Namen und IDs deiner Geräte und Entitäten – gib es mit Bedacht weiter.
-
-## Support und Haftung
-
-Ein privates Projekt, bereitgestellt wie es ist (MIT-Lizenz, siehe `LICENSE`). Fehler und Wünsche gerne als [Issue](https://github.com/layvo-addons/ha-doc-addon/issues) melden; bitte keine PDFs oder Protokolle mit persönlichen Daten anhängen. Das Add-on liest nur und verändert deine Home-Assistant-Konfiguration nicht.
-
-## Bekannte Grenzen
-
-- Automatisierungen, die in YAML ohne ID definiert sind, sind über die Schnittstelle nicht lesbar und erscheinen mit Hinweis.
-- Vom Blueprint selbst werden Auslöser und Aktionen nicht dargestellt, nur seine Eingaben.
-- Der Abschnitt «Netzwerk» funktioniert nur mit einem UniFi-Gateway oder einer Fritz!Box (Integrationen «UniFi Network» bzw. «AVM FRITZ!Box Tools»). Eine Port-Zuordnung der Switches ist nicht enthalten.
-- Add-ons und Zigbee-Topologie sind noch nicht enthalten.
+Your notes, cover page, logo, monthly report settings and created PDFs are stored in the `ha_doc` folder of the `share` folder and are kept.

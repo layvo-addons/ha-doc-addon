@@ -1,5 +1,7 @@
 # layvo Doku (BETA)
 
+> **Umgezogen:** layvo Doku wird nur noch über `https://git.layvo.ch/layvo/ha-doc-addon` verteilt. Diese Installation aus GitHub bekommt keine Updates mehr. Füge die neue Adresse unter **Einstellungen › Apps › App-Store › ⋮ › Repositorys** hinzu, installiere «layvo Doku» daraus und deinstalliere danach diese Version. Deine Daten im Ordner `ha_doc` bleiben erhalten.
+
 **Beta-Version zum Testen neuer Funktionen.** Sie läuft unabhängig von «layvo Doku» und speichert alles im eigenen Ordner `ha_doc_beta` der Freigabe `share`. Die Daten der produktiven Version (Ordner `ha_doc`) bleiben unberührt. Bemerkungen, Logo und Deckblatt-Angaben übernimmt die Beta nicht automatisch; kopiere dafür `notes.json`, `cover.json` und den Ordner `branding` von `share/ha_doc` nach `share/ha_doc_beta`. Lass den Monatsbericht in der Beta ausgeschaltet, sonst entstehen doppelte Berichte.
 
 Seitenleiste → **layvo Doku Beta** → Abschnitte und Optionen wählen → **PDF erstellen**.

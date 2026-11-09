@@ -1,8 +1,8 @@
 name: "layvo Doku (BETA)"
-version: "0.7.9"
+version: "0.7.10"
 slug: ha_doc_beta
-description: "BETA-Version von layvo Doku zum Testen neuer Funktionen"
-url: "https://github.com/layvo-addons/ha-doc-addon"
+description: "Umgezogen nach git.layvo.ch: bitte von dort neu installieren (siehe Dokumentation)"
+url: "https://git.layvo.ch/layvo/ha-doc-addon"
 stage: experimental
 arch:
   - aarch64
